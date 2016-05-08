@@ -102,7 +102,7 @@ public class SidePanel extends JPanel implements ActionListener
 	{
 		diceScoreTitlePlayer[2].setLayout(new BorderLayout(5,5));
 
-		Icon icon = new ImageIcon("rolldice.jpg");
+		Icon icon = new ImageIcon("resources/rolldice.jpg");
 
 		rollDice = new JButton("ROLL", icon);
 		rollDice.setFont(new Font("Berlin Sans FB", Font.BOLD, 30));

@@ -1,6 +1,6 @@
 all:
-	javac BoardPanel.java
-	javac GameFrame.java
-	javac SidePanel.java
-	javac StartMenu.java
-	javac SnakesAndLadders.java
+	make clean
+	javac *.java
+
+clean:
+	rm -f *.class

@@ -6,7 +6,7 @@ public class SnakesAndLadders
 	{
 		StartMenu menu = new StartMenu();
 
-		menu.setSize(400,350);
+		menu.setSize(400, 350);
 		menu.setLocationRelativeTo(null);
 		menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		menu.setVisible(true);

@@ -1,3 +1,4 @@
+
 import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -18,7 +19,7 @@ public class StartMenu extends JFrame implements ActionListener
 		super("Snakes & Ladders");
 		setLayout(new BorderLayout(5,5));
 
-		JLabel cover = new JLabel(new ImageIcon("snakesLadders.jpg"));
+		JLabel cover = new JLabel(new ImageIcon("resources/snakesLadders.jpg"));
 
 		play = new JButton("Play");
 		play.setFont(font);
