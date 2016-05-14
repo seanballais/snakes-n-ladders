@@ -9,6 +9,7 @@ public class LinePointing
     private int pointLimit;
     private Point limit;
     private ArrayList<Point> points;
+    private int limitVal;
 
     public LinePointing()
     {
@@ -17,6 +18,7 @@ public class LinePointing
         this.pointLimit = 20;
         this.points = new ArrayList<Point>();
         this.limit = new Point(100, 100);
+        this.limitVal = (int) ((limit.x + limit.y) / 2);
     }
 
     public LinePointing(int seed)
@@ -25,6 +27,7 @@ public class LinePointing
         this.points = new ArrayList<Point>();
         this.pointLimit = 20;
         this.limit = new Point(100, 100);
+        this.limitVal = (int) ((limit.x + limit.y) / 2);
     }
 
     public LinePointing(int seed, int limit)
@@ -33,6 +36,7 @@ public class LinePointing
         this.pointLimit = limit;
         this.points = new ArrayList<Point>();
         this.limit = new Point(100, 100);
+        this.limitVal = 100;
     }
 
     public LinePointing(int seed, int limit, int x, int y)
@@ -41,14 +45,7 @@ public class LinePointing
         this.pointLimit = limit;
         this.points = new ArrayList<Point>();
         this.limit = new Point(x, y);
-    }
-
-    public LinePointing(int seed, int limit, Point graphLimit)
-    {
-        this.generator.setSeed(seed);
-        this.pointLimit = limit;
-        this.points = new ArrayList<Point>();
-        this.limit = graphLimit;
+        this.limitVal = (int) ((x + y) / 2);
     }
 
     public void setSeed(int seed)
@@ -61,20 +58,25 @@ public class LinePointing
         // Generate the points of the interesecting lines
         // to get a procedurally generated board for
         // Snakes and Ladders
+        // [0] refers to m
+        // [1] refers to x
+        // [2] refers to b
+        // y = mx + b
         int[] baseLine = new int[3];
-        for (int val : baseLine) {
-            // [0] refers to m
-            // [1] refers to x
-            // [2] refers to b
-            // y = mx + b
-            val = generator.nextInt(100);
-        }
+        System.out.println("Baseline: ");
+        baseLine[0] = generator.nextInt(100);
+        baseLine[1] = generator.nextInt(100);
+        baseLine[2] = generator.nextInt(100);
 
-        for (int i = 0; i < limit.getX(); i++) {
+        for (int i = 0; i < limitVal; i++) {
             int[] secondLine = new int[3];
-            for (int val : baseLine) {
-                val = generator.nextInt(100);
+            System.out.println("Second line: ");
+            for (int i : secondLine) {
+                System.out.println("")
             }
+            secondLine[0] = generator.nextInt(100);
+            secondLine[1] = generator.nextInt(100);
+            secondLine[2] = generator.nextInt(100);
 
             // Find the intersection of the two lines
             double x = abs(secondLine[2] - baseLine[2]) / abs(baseLine[0] - secondLine[0]);
@@ -92,10 +94,10 @@ public class LinePointing
     {
         // Convert the XY coordinates to board tile indexes
         this.generatePoints();
-        int[] tilePoints = new int[limit];
+        int[] tilePoints = new int[limitVal];
         for (Point p : points) {
             // Get the tiles with either a ladder or snake
-            int tileLoc = (int) p.getX() + (int) p.getY();
+            int tileLoc = (int) p.x + (int) p.y;
             tileLoc = (tileLoc > 99) ? 99 : tileLoc;
             tilePoints[tileLoc] = 1;
         }
@@ -108,15 +110,15 @@ public class LinePointing
         // Redesignate tiles to make sure no two tiles are the same
         // in the list.
         int correctionMode = 10;
-        for (int tileIndex = 0; tileIndex < limit - 1; tileIndex++) {
-            for (int currTile = tileIndex + 1; currTile < limit; currTile++) {
-                if (tiles[tileIndex] == tiles[currIndex]) {
-                    if (tiles[currIndex] >= 0 && tiles[currIndex] < 10) {
-                        tiles[currIndex] += 10;
-                    } else if (tiles[currIndex] >= 90 && tiles[currIndex] < 100) {
-                        tiles[currIndex] -= 10;
+        for (int tileIndex = 0; tileIndex < limitVal - 1; tileIndex++) {
+            for (int currTile = tileIndex + 1; currTile < limitVal; currTile++) {
+                if (tiles[tileIndex] == tiles[currTile]) {
+                    if (tiles[currTile] >= 0 && tiles[currTile] < 10) {
+                        tiles[currTile] += 10;
+                    } else if (tiles[currTile] >= 90 && tiles[currTile] < 100) {
+                        tiles[currTile] -= 10;
                     } else {
-                        tiles[currIndex] += correctionMode;
+                        tiles[currTile] += correctionMode;
                         correctionMode *= -1;
                     }
                 }
@@ -129,8 +131,8 @@ public class LinePointing
     public int[] getTileDelegations()
     {
         // Delegate the tiles to either a snake point or ladder point
-        int snakePoints = (int) (limit / 2);
-        int ladderPoints = (int) (limit / 2);
+        int snakePoints = (int) (limitVal / 2);
+        int ladderPoints = (int) (limitVal / 2);
 
         int[] tiles = this.pointCorrection(this.getPoints());
         for (int tile : tiles) {
