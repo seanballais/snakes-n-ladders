@@ -6,7 +6,7 @@ import static java.lang.Math.abs;
 public class LinePointing
 {
     private Random generator = new Random();
-    private int pointLimit;
+    private int pointLimit = 20;
     private Point limit;
     private ArrayList<Point> points;
     private int limitVal;
@@ -59,60 +59,99 @@ public class LinePointing
         // to get a procedurally generated board for
         // Snakes and Ladders
         // [0] refers to m
-        // [1] refers to x
-        // [2] refers to b
+        // [1] refers to b
         // y = mx + b
-        int[] baseLine = new int[3];
-        System.out.println("Baseline: ");
-        baseLine[0] = generator.nextInt(100);
-        baseLine[1] = generator.nextInt(100);
-        baseLine[2] = generator.nextInt(100);
+        int[] baseLine = new int[2];
+        baseLine[0] = generator.nextInt(88) + 10;
+        baseLine[1] = generator.nextInt(88) + 10;
 
-        for (int i = 0; i < limitVal; i++) {
-            int[] secondLine = new int[3];
-            System.out.println("Second line: ");
-            for (int i : secondLine) {
-                System.out.println("")
-            }
-            secondLine[0] = generator.nextInt(100);
-            secondLine[1] = generator.nextInt(100);
-            secondLine[2] = generator.nextInt(100);
+        for (int i = 0; i < pointLimit; i++) {
+            int[] secondLine = new int[2];
+            secondLine[0] = generator.nextInt(88) + 10;
+            secondLine[1] = generator.nextInt(88) + 10;
 
             // Find the intersection of the two lines
-            double x = abs(secondLine[2] - baseLine[2]) / abs(baseLine[0] - secondLine[0]);
-            double y = abs(baseLine[0] * x + baseLine[2]);
-            points.add(new Point((int) x, (int) y));
+            int dividend = 0;
+            if ((baseLine[0] - secondLine[0]) == 0) {
+                dividend = 1;
+            } else {
+                dividend = baseLine[0] - secondLine[0];
+            }
 
-            for (int ctr = 0; ctr < 3; ctr++) {
+            int x = abs(secondLine[1] - baseLine[1]) / dividend;
+            int y = abs(baseLine[0] * x + baseLine[1]);
+
+            if (pointInList(x, y)) {
+                i--;
+                continue;
+            } else {
+                points.add(new Point(x, y));
+            }
+
+            for (int ctr = 0; ctr < 2; ctr++) {
                 // Set the base line to the second line
                 baseLine[ctr] = secondLine[ctr];
             }
         }
     }
 
-    private int[] getPoints()
+    private boolean pointInList(int x, int y)
     {
-        // Convert the XY coordinates to board tile indexes
-        this.generatePoints();
-        int[] tilePoints = new int[limitVal];
+        // Checks if a point is already in the list
         for (Point p : points) {
-            // Get the tiles with either a ladder or snake
-            int tileLoc = (int) p.x + (int) p.y;
-            tileLoc = (tileLoc > 99) ? 99 : tileLoc;
-            tilePoints[tileLoc] = 1;
+            if ((int) p.x == x && (int) p.y == y) {
+                return true;
+            }
         }
 
-        return tilePoints;
+        return false;
     }
 
-    private int[] pointCorrection(int[] tiles)
+    private boolean tileInList(int[] tilePoints, int tileValue)
     {
-        // Redesignate tiles to make sure no two tiles are the same
-        // in the list.
+        // Check if a tile is already in a list
+        for (int tile : tilePoints) {
+            if (tile == tileValue) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean sameRow(int a, int b)
+    {
+        // Check if a tile is on the same row
+        int aFirstDigit = getIntFirstDigit(a);
+        int bFirstDigit = getIntFirstDigit(b);
+        if (aFirstDigit == bFirstDigit) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private int getIntFirstDigit(int i)
+    {
+        // Limited to two digit numbers
+        if (i < 10) {
+            return i % 10;
+        }
+
+        return i / 10;
+    }
+
+    private int[] pointCorrection(int[] tiles, int indexLimit)
+    {
+        // Redesignate tiles to decrease the chances of
+        // two tiles being both a snake and a ladder point, and
+        // decrease the chances of pair tiles being on the same
+        // row.
         int correctionMode = 10;
-        for (int tileIndex = 0; tileIndex < limitVal - 1; tileIndex++) {
-            for (int currTile = tileIndex + 1; currTile < limitVal; currTile++) {
-                if (tiles[tileIndex] == tiles[currTile]) {
+        for (int tileIndex = 0; tileIndex < indexLimit - 1; tileIndex++) {
+            for (int currTile = tileIndex + 1; currTile < indexLimit; currTile++) {
+                if (tiles[tileIndex] == tiles[currTile] ||
+                    sameRow(tiles[tileIndex], tiles[currTile])) {
                     if (tiles[currTile] >= 0 && tiles[currTile] < 10) {
                         tiles[currTile] += 10;
                     } else if (tiles[currTile] >= 90 && tiles[currTile] < 100) {
@@ -122,40 +161,36 @@ public class LinePointing
                         correctionMode *= -1;
                     }
                 }
+
+                if (tiles[currTile] == 0 || tiles[currTile] == 1) {
+                    tiles[currTile] = 2;
+                }
             }
         }
 
         return tiles;
     }
 
-    public int[] getTileDelegations()
+    public int[] getTiles()
     {
-        // Delegate the tiles to either a snake point or ladder point
-        int snakePoints = (int) (limitVal / 2);
-        int ladderPoints = (int) (limitVal / 2);
+        // Convert the XY coordinates to board tile indexes
+        this.generatePoints();
+        int[] tiles = new int[pointLimit];
 
-        int[] tiles = this.pointCorrection(this.getPoints());
-        for (int tile : tiles) {
-            if (tile == 1) {
-                boolean tileDelegated = false;
-                int tileValue = 0;
-                while (!tileDelegated) {
-                    tileValue = generator.nextInt(1) + 2;
-                    if (tileValue == 2 && ladderPoints > 0) {
-                        tile = 2;
-                        ladderPoints--;
-                    } else if (tileValue == 3 && snakePoints > 0) {
-                        tile = 3;
-                        snakePoints--;
-                    }
-
-                    if (tile == 2 || tile == 3) {
-                        tileDelegated = true;
-                    }
-                }
+        int tileIndex = 0;
+        for (Point p : points) {
+            // Get the tiles with either a ladder or snake
+            int tileLoc = (int) p.x + (int) p.y;
+            if (tileLoc > 99) {
+                tileLoc = 99;
+            } else if (tileLoc == 1) {
+                tileLoc = 2;
             }
+
+            tiles[tileIndex] = tileLoc;
+            tileIndex++;
         }
 
-        return tiles;
+        return pointCorrection(tiles, pointLimit);
     }
 }
