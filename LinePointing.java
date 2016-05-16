@@ -6,7 +6,7 @@ import static java.lang.Math.abs;
 public class LinePointing
 {
     private Random generator = new Random();
-    private int pointLimit = 20;
+    private int pointLimit = 12;
     private Point limit;
     private ArrayList<Point> points;
     private int limitVal;
@@ -15,7 +15,7 @@ public class LinePointing
     {
         Random seedGenerator = new Random();
         this.generator.setSeed(seedGenerator.nextInt(32000));
-        this.pointLimit = 20;
+        this.pointLimit = 12;
         this.points = new ArrayList<Point>();
         this.limit = new Point(100, 100);
         this.limitVal = (int) ((limit.x + limit.y) / 2);
@@ -25,7 +25,7 @@ public class LinePointing
     {
         this.generator.setSeed(seed);
         this.points = new ArrayList<Point>();
-        this.pointLimit = 20;
+        this.pointLimit = 8;
         this.limit = new Point(100, 100);
         this.limitVal = (int) ((limit.x + limit.y) / 2);
     }
@@ -62,11 +62,10 @@ public class LinePointing
         // [1] refers to b
         // y = mx + b
         int[] baseLine = new int[2];
-        baseLine[0] = generator.nextInt(88) + 10;
-        baseLine[1] = generator.nextInt(88) + 10;
-
+        int[] secondLine = new int[2];
         for (int i = 0; i < pointLimit; i++) {
-            int[] secondLine = new int[2];
+            baseLine[0] = generator.nextInt(88) + 10;
+            baseLine[1] = generator.nextInt(88) + 10;
             secondLine[0] = generator.nextInt(88) + 10;
             secondLine[1] = generator.nextInt(88) + 10;
 
@@ -81,30 +80,8 @@ public class LinePointing
             int x = abs(secondLine[1] - baseLine[1]) / dividend;
             int y = abs(baseLine[0] * x + baseLine[1]);
 
-            if (pointInList(x, y)) {
-                i--;
-                continue;
-            } else {
-                points.add(new Point(x, y));
-            }
-
-            for (int ctr = 0; ctr < 2; ctr++) {
-                // Set the base line to the second line
-                baseLine[ctr] = secondLine[ctr];
-            }
+            points.add(new Point(x, y));
         }
-    }
-
-    private boolean pointInList(int x, int y)
-    {
-        // Checks if a point is already in the list
-        for (Point p : points) {
-            if ((int) p.x == x && (int) p.y == y) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean tileInList(int[] tilePoints, int tileValue)
@@ -133,12 +110,7 @@ public class LinePointing
 
     private int getIntFirstDigit(int i)
     {
-        // Limited to two digit numbers
-        if (i < 10) {
-            return i % 10;
-        }
-
-        return i / 10;
+        return Integer.parseInt(Integer.toString(i).substring(0, 1));
     }
 
     private int[] pointCorrection(int[] tiles, int indexLimit)
@@ -147,23 +119,21 @@ public class LinePointing
         // two tiles being both a snake and a ladder point, and
         // decrease the chances of pair tiles being on the same
         // row.
-        int correctionMode = 10;
+        int correctionMode = 1;
         for (int tileIndex = 0; tileIndex < indexLimit - 1; tileIndex++) {
-            for (int currTile = tileIndex + 1; currTile < indexLimit; currTile++) {
+            for (int currTile = 0; currTile < indexLimit; currTile++) {
                 if (tiles[tileIndex] == tiles[currTile] ||
                     sameRow(tiles[tileIndex], tiles[currTile])) {
                     if (tiles[currTile] >= 0 && tiles[currTile] < 10) {
-                        tiles[currTile] += 10;
+                        tiles[currTile] += 10 + generator.nextInt(10);
                     } else if (tiles[currTile] >= 90 && tiles[currTile] < 100) {
-                        tiles[currTile] -= 10;
+                        tiles[currTile] -= 10 + generator.nextInt(10);
                     } else {
-                        tiles[currTile] += correctionMode;
+                        tiles[currTile] += (generator.nextInt(
+                                                9)
+                                            + 1) * correctionMode;
                         correctionMode *= -1;
                     }
-                }
-
-                if (tiles[currTile] == 0 || tiles[currTile] == 1) {
-                    tiles[currTile] = 2;
                 }
             }
         }

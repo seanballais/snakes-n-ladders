@@ -9,7 +9,7 @@ public class SnakesAndLadders
 	{
 		GameFrame menu = new GameFrame();
 
-		menu.setSize(1000,730);
+		menu.setSize(1060,730);
 		menu.setUndecorated(true);
 		menu.setVisible(true);
 		menu.setLocationRelativeTo(null);

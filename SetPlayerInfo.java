@@ -3,92 +3,129 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-public class SetPlayerInfo extends JFrame
+public class SetPlayerInfo extends JFrame implements ActionListener
 {
-	public String p1, p2;
+	private JPanel imgPanel;
+	private JButton game, selectColor;
 	private JPanel buttonHolder;
-	private JButton game;
 
-	private JPanel[] imgPanel = new JPanel[2];
-	private JButton[] selectColor  = new JButton[2];
-
-	public Icon[] pieceImages = new Icon[4];
-	public JLabel[] pieceImgHolder = new JLabel[4];
+	public JLabel[] pieceImages = new JLabel[4];
+	public JPanel[] pieceImgHolder = new JPanel[4];
 	public String[] pieceImgNames = {"resources/bluePiece.jpg", "resources/redPiece.jpg", "resources/yellowPiece.jpg", "resources/greenPiece.jpg"};
-
-	public Icon[] charImages = new Icon[4];
-	public JLabel[] charImgHolder = new JLabel[4];
-	public String[] charImgNames = {"resources/b.jpg", "resources/r.jpg", "resources/y.jpg", "resources/g.jpg"};
-
 	private Font eras = new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 20);
+
+	public static String p1, p2;
+	public static int[] colorIndexOfPlayers = new int[2];
 
 	public SetPlayerInfo()
 	{
 		setLayout(new BorderLayout(2,2));
 
 		UIManager.put("OptionPane.messageFont", new Font("Britannic Bold", Font.PLAIN, 16));
-		UIManager.put("OptionPane.buttonFont", new Font("Times New Roman", Font.BOLD, 16));
-		UIManager.put("OptionPane.foreground", Color.BLACK);
+		UIManager.put("OptionPane.buttonFont", new Font("Times New Roman", Font.BOLD, 18));
+		UIManager.put("Button.disabledText", Color.BLACK);
+		UIManager.put("Button.foreground", Color.WHITE);
 
 		p1 = JOptionPane.showInputDialog("PLAYER 1 : ");
 		p2 = JOptionPane.showInputDialog("PLAYER 2 : ");
 
 		createPieceImages();
-		createCharacterImages();
+		createSelectButtons();
 
-		add(imgPanel[0], BorderLayout.CENTER);
-		add(imgPanel[1], BorderLayout.EAST);
+		add(imgPanel, BorderLayout.CENTER);
+		add(buttonHolder, BorderLayout.SOUTH);
 	}
 
 	public void createPieceImages()
 	{
-		imgPanel[0] = new JPanel();
-		imgPanel[0].setLayout(new GridLayout(2,2));
-		imgPanel[0].setBackground(Color.BLACK);
+		imgPanel = new JPanel();
+		imgPanel.setLayout(new GridLayout(2,2));
+		imgPanel.setBackground(Color.BLACK);
 
 		for(int x = 0; x < 4; x++)
 		{
-			pieceImages[x] = new ImageIcon(pieceImgNames[x]);
-			pieceImgHolder[x] = new JLabel(pieceImages[x]);
-			imgPanel[0].add(pieceImgHolder[x]);
+			pieceImages[x] = new JLabel(new ImageIcon(pieceImgNames[x]));
+			pieceImgHolder[x] = new JPanel();
+			pieceImgHolder[x].add(pieceImages[x]);
+
+			imgPanel.add(pieceImgHolder[x]);
 		}
 	}
 
 
-	public void createCharacterImages()
+	public void createSelectButtons()
 	{
-		imgPanel[1] = new JPanel();
-		imgPanel[1].setLayout(new GridLayout(2,2));
-		imgPanel[1].setBackground(Color.YELLOW);
-
-		for(int a = 0; a < 4; a++)
-		{
-			charImages[a] = new ImageIcon(charImgNames[a]);
-			charImgHolder[a] = new JLabel(charImages[a]);
-			imgPanel[1].add(charImgHolder[a]);
-		}
-	}
-
-	public void createButtons()
-	{
-		JPanel slctClr;
-
 		buttonHolder = new JPanel();
-		buttonHolder.setLayout(new GridLayout(2,1));
+		buttonHolder.setLayout(new GridLayout(1,2));
+		buttonHolder.setPreferredSize(new Dimension(50,50));
 
-		slctClr = new JPanel();
-		slctClr.setLayout(new GridLayout(1,2));
+		selectColor = new JButton("Select Color");
+		selectColor.setFont(new Font("Eras BOLD ITC", Font.BOLD + Font.ITALIC, 20));
+		selectColor.setHorizontalAlignment(SwingConstants.CENTER);
+		selectColor.addActionListener(this);
 
-		for(int i = 0; i < 2; i++)
+		game = new JButton("Game");
+		game.setEnabled(false);
+		game.setFont(new Font("Eras BOLD ITC", Font.BOLD + Font.ITALIC, 20));
+		game.addActionListener(this);
+
+		buttonHolder.add(selectColor);
+		buttonHolder.add(game);
+	}
+
+	static int ctr = 1;
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == selectColor)
 		{
-			selectColor[i] = new JButton("Select Color");
-			selectColor[i].setHorizontalAlignment(SwingConstants.CENTER);
-			slctClr.add(selectColor[i]);
+			selectColor.setEnabled(false);
+			JOptionPane.showMessageDialog(SetPlayerInfo.this, "Choose Color For Player " + ctr,
+										"Color of Piece", JOptionPane.INFORMATION_MESSAGE);
+
+			for(int j = 0; j < 4; j++)
+				pieceImgHolder[j].addMouseListener(new MouseHandler());
+
+		}else if(e.getSource() == game) {
+
+			this.dispose();
+
+			for(int x = 0; x < 5; x++)
+				SidePanels.numberOfRounds[x].setEnabled(true);
+
 		}
 
+	}
 
+	private class MouseHandler extends MouseAdapter
+	{
+		public void mouseClicked(MouseEvent e)
+		{
+			Color[] colors = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN};
 
+			for(int x = 0; x < 4; x++)
+			{
+				if(e.getSource() == pieceImgHolder[x])
+				{
+					pieceImages[x].setText("Player " + ctr);
+					pieceImages[x].setFont(eras);
+					pieceImages[x].setVerticalAlignment(SwingConstants.CENTER);
+					pieceImgHolder[x].setBackground(colors[x]);
 
+					if(ctr == 1)
+						colorIndexOfPlayers[0] = x;
+					else
+						colorIndexOfPlayers[1] = x;
+				}
+			}
+
+			ctr++;
+
+			if(ctr == 2)
+				JOptionPane.showMessageDialog(SetPlayerInfo.this, "Choose Color For Player " + ctr,
+										"Color of Piece", JOptionPane.INFORMATION_MESSAGE);
+			if(ctr == 3)
+				game.setEnabled(true);
+		}
 	}
 
 }

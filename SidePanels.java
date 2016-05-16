@@ -6,25 +6,33 @@ import java.util.Random;
 
 public class SidePanels extends JPanel implements ActionListener, ItemListener
 {
+	private int diceNo;
 	private Border border;
 	private ButtonGroup glue;
 	private JLabel playersTitle, diceResult;
+	private static JPanel twoChipHolder;
 	private JTextField currentPlayer, tilePosition;
-	private JButton play, exit, instructions, credits, rollDice;
+	private JButton newGame, exit, instructions, credits, rollDice;
 
 	private JPanel[] mainPanels = new JPanel[2];
 	private JPanel[] playerAndStatusPanels = new JPanel[2];
 	private JTextField[] scoreOfPlayers = new JTextField[2];
 	private JTextField[] nameDisplayFields = new JTextField[2];
 	private JTextField[] currentPlayerAndTilePosition = new JTextField[4];
-	private JRadioButton[] numberOfRounds = new JRadioButton[5];
-
+	public static JRadioButton[] numberOfRounds = new JRadioButton[5];
 	private Icon[] diceImages = new Icon[6];
+
+	private Font eras = new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 15);
+
+	SetPlayerInfo info;
+
 
 
 	public SidePanels(Border b)
 	{
 		UIManager.put("RadioButton.disabledText", Color.BLACK);
+		UIManager.put("RadioButton.font", new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 12));
+		UIManager.put("Button.font", eras);
 
 		setLayout(new BorderLayout(5,5));
 		setPreferredSize(new Dimension(280,200));
@@ -38,45 +46,6 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		add(mainPanels[0], BorderLayout.CENTER);
 		add(mainPanels[1], BorderLayout.SOUTH);
-	}
-
-
-	public void actionPerformed(ActionEvent e)
-	{
-		if(e.getSource() == play)
-		{
-			SetPlayerInfo c = new SetPlayerInfo();
-			c.setSize(700,800);
-			c.setUndecorated(true);
-			c.setLocationRelativeTo(null);
-			c.getRootPane().setBorder(border);
-			c.setVisible(true);
-
-			nameDisplayFields[0].setText("Player 1: " + c.p1);
-			nameDisplayFields[1].setText("Player 2: " + c.p2);
-
-		}else if(e.getSource() == exit)
-
-			System.exit(0);
-
-		else if(e.getSource() == rollDice)
-		{
-			Random randomizer = new Random();
-
-			int diceNo = randomizer.nextInt(diceImages.length);
-
-			diceResult.setIcon(diceImages[diceNo]);
-			diceResult.setHorizontalAlignment(SwingConstants.CENTER);
-			System.out.println("Dice No : " + (diceNo+1));
-		}
-
-	}
-
-
-	public void itemStateChanged(ItemEvent e)
-	{
-		for(int x = 0; x < 5; x++)
-			numberOfRounds[x].setEnabled(false);
 	}
 
 
@@ -103,12 +72,12 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		JPanel jButtonPanel = new JPanel();
 		JPanel radioButtonPanel = new JPanel();
 
-		play = new JButton("New Game");
+		newGame = new JButton("New Game");
 		exit = new JButton("Exit");
 
 		jButtonPanel.setLayout(new GridLayout(1,2));
 		jButtonPanel.setBackground(new Color(0,96,255));
-		jButtonPanel.add(play);
+		jButtonPanel.add(newGame);
 		jButtonPanel.add(exit);
 
 		glue = new ButtonGroup();
@@ -116,6 +85,7 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		for(int x = 0; x < 5; x++)
 		{
 			numberOfRounds[x] = new JRadioButton(number[x], false);
+			numberOfRounds[x].setEnabled(false);
 			radioButtonPanel.add(numberOfRounds[x]);
 			glue.add(numberOfRounds[x]);
 		}
@@ -132,7 +102,7 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		playerAndStatusPanels[0].add(jButtonPanel, BorderLayout.CENTER);
 		playerAndStatusPanels[0].add(radioButtonPanel, BorderLayout.SOUTH);
 
-		play.addActionListener(this);
+		newGame.addActionListener(this);
 		exit.addActionListener(this);
 
 		for(int y = 0; y < 5; y++)
@@ -149,9 +119,11 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		{
 			nameDisplayFields[a] = new JTextField(String.format("  Player %d:", a+1), 13);
 			nameDisplayFields[a].setEditable(false);
+			nameDisplayFields[a].setFont(eras);
 			nameDisplayFields[a].setBorder(BorderFactory.createLoweredBevelBorder());
 
 			scoreOfPlayers[a] = new JTextField("0", 2);
+			scoreOfPlayers[a].setFont(eras);
 			scoreOfPlayers[a].setEditable(false);
 			scoreOfPlayers[a].setHorizontalAlignment(SwingConstants.CENTER);
 			scoreOfPlayers[a].setBorder(BorderFactory.createLoweredBevelBorder());
@@ -165,18 +137,18 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		panel1.setLayout(new FlowLayout());
 		panel1.setBackground(new Color(40,40,40));
-		panel1.setPreferredSize(new Dimension(190,230));
+		panel1.setPreferredSize(new Dimension(250,230));
 		panel1.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 
 		panel2.setLayout(new FlowLayout());
 		panel2.setBorder(border);
 		panel2.setBackground(new Color(0,255,64));
-		panel2.setPreferredSize(new Dimension(250,300));
+		panel2.setPreferredSize(new Dimension(290,300));
 		panel2.add(playersTitle);
 		panel2.add(panel1);
 
 		playerAndStatusPanels[1].setLayout(new FlowLayout());
-		playerAndStatusPanels[1].setBackground(new Color(0,0,0));//0,255,128
+		playerAndStatusPanels[1].setBackground(new Color(0,0,0));
 		playerAndStatusPanels[1].add(panel2);
 	}
 
@@ -223,9 +195,10 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		JPanel diceResultPanel;
 
 		String[] diceNames = {"resources/dice1.jpg", "resources/dice2.jpg", "resources/dice3.jpg", "resources/dice4.jpg",
-								 "resources/dice5.jpg", "resources/dice6.jpg"};
+							  "resources/dice5.jpg", "resources/dice6.jpg"};
 
 		rollDice = new JButton("Roll Dice");
+		rollDice.setEnabled(false);
 		instructions = new JButton("Instructions");
 		credits = new JButton("About");
 
@@ -252,6 +225,52 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		rollDice.addActionListener(this);
 		instructions.addActionListener(this);
 		credits.addActionListener(this);
+	}
+
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == newGame)
+		{
+			info = new SetPlayerInfo();
+			info.setSize(670,600);
+			info.setUndecorated(true);
+			info.setLocationRelativeTo(null);
+			info.getRootPane().setBorder(border);
+			info.setVisible(true);
+
+			nameDisplayFields[0].setText("  Player 1: " + SetPlayerInfo.p1);
+			nameDisplayFields[1].setText("  Player 2: " + SetPlayerInfo.p2);
+
+			rollDice.setEnabled(true);
+
+		}else if(e.getSource() == exit)
+
+			System.exit(0);
+
+		else if(e.getSource() == rollDice)
+		{
+			Random randomizer = new Random();
+
+			diceNo = randomizer.nextInt(diceImages.length);
+
+			diceResult.setIcon(diceImages[diceNo]);
+			diceResult.setHorizontalAlignment(SwingConstants.CENTER);
+			System.out.println("Dice No : " + (diceNo+1));
+
+			GameProper g = new GameProper(diceNo);
+		}
+
+	}
+
+
+	public void itemStateChanged(ItemEvent e)
+	{
+		for(int x = 0; x < 5; x++)
+			numberOfRounds[x].setEnabled(false);
+
+		GameProper g = new GameProper();
+		g.setPieceOnBoard();
 	}
 
 }
