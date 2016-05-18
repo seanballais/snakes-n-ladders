@@ -14,12 +14,14 @@ import javax.swing.BorderFactory;
 public class BoardPanel extends JPanel
 {
 	public JPanel[] tiles = new JPanel[100];
-	public int[] objTiles;
 
 	private Color paleGreen = new Color(128, 191, 0);
 	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA,
 							  paleGreen, Color.BLUE, Color.WHITE};
 
+	public static int[] objTiles;
+	public static int[] ladderTiles;
+	public static int[] snakeTiles;
   	public static JLabel[] tileNo = new JLabel[100];
 	private static int ctr = 99;
 	private int colorCtr = 0;
@@ -28,6 +30,13 @@ public class BoardPanel extends JPanel
 	{
 		setLayout(new GridLayout(10,10));
 		this.objTiles = objTiles;
+
+		this.ladderTiles = new int[6];
+		this.snakeTiles = new int[6];
+		for (int i = 0; i < 6; i++) {
+			this.ladderTiles[i] = this.objTiles[i];
+			this.snakeTiles[i] = this.objTiles[i + 6];
+		}
 
 		for(int x = 1; x <= 10; x++)
 		{
@@ -59,51 +68,5 @@ public class BoardPanel extends JPanel
 			}
 			ctr -= 10;
 		}
-	}
-
-	public void paint(Graphics g)
-	{
-		super.paint(g);
-
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(3));
-
-		for (int i = 0; i < 4; i++) {
-			// Paint ladders
-			g2.drawLine( // First line
-				(int) getOrigin(objTiles[i]).x - 15,
-				(int) getOrigin(objTiles[i]).y + 15,
-				(int) getOrigin(objTiles[i + 1]).x - 15,
-				(int) getOrigin(objTiles[i + 1]).y + 15
-			);
-
-			g2.drawLine( // Second line
-				(int) getOrigin(objTiles[i]).x + 15,
-				(int) getOrigin(objTiles[i]).y - 15,
-				(int) getOrigin(objTiles[i + 1]).x + 15,
-				(int) getOrigin(objTiles[i + 1]).y - 15
-			);
-		}
-
-		g.setColor(Color.YELLOW);
-		for (int i = 4; i < 8; i++) {
-			// Paint ladders
-			g2.drawLine(
-				(int) getOrigin(objTiles[i]).x,
-				(int) getOrigin(objTiles[i]).y,
-				(int) getOrigin(objTiles[i + 1]).x,
-				(int) getOrigin(objTiles[i + 1]).y
-			);
-		}
-	}
-
-	private Point getOrigin(int tile)
-	{
-		// Get the origin coordinate of a tile
-		// 100 - tile to correct the associated tiles
-		int xOrigin = ((tile) % 10) * 62; // Tile width is 62 pixels.
-		int yOrigin = ((Integer.parseInt(Integer.toString(tile).substring(0, 1)))) * 62;
-
-		return new Point(xOrigin + 31, yOrigin + 31);
 	}
 }

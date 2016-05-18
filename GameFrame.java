@@ -72,8 +72,8 @@ public class GameFrame extends JFrame
 
 	public void attachBoardPanel()
 	{
-		LinePointing lp = new LinePointing();
-        int[] tiles = lp.getTiles();
+		PointGeneration pg = new PointGeneration();
+        int[] tiles = pg.getTiles();
 		board = new BoardPanel(tiles);
 
 		System.out.println("Tile Values");
