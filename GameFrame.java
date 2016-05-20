@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.event.*;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,17 +12,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.border.*;
 import javax.swing.BorderFactory;
+import javax.swing.UIManager;
 
 public class GameFrame extends JFrame
 {
+	private JPanel blank;
 	private JLabel titleLogo;
-	private JPanel boardAndTitle, piecesInitialPlacementPanel;
+	private JPanel boardAndTitle;
 
-	private Icon[] pieceImages = new Icon[4];
 	private Color[] colorOfLines = new Color[4];
 	private Border[] coloredLines = new Border[4];
 
-	protected Border compound1, compound2, compound3;
+	public Border compound1, compound2, compound3;
 	private Border raised = BorderFactory.createRaisedBevelBorder();
 	private Border lowered = BorderFactory.createLoweredBevelBorder();
 
@@ -33,41 +35,26 @@ public class GameFrame extends JFrame
 		setLayout(new BorderLayout(5,5));
 		setBackground(Color.BLACK);
 
-		new Music();
-
-		attachInitialPiecePanel();
+		attachBlankPanel();
 		attachBoardPanel();
 
 		sidePanel = new SidePanels(compound3);
 		sidePanel.setPreferredSize(new Dimension(300,300));
 
-		add(piecesInitialPlacementPanel, BorderLayout.WEST);
+		add(blank, BorderLayout.WEST);
 		add(boardAndTitle, BorderLayout.CENTER);
 		add(sidePanel,BorderLayout.EAST);
+
+		new Music();
 	}
 
-	public void attachInitialPiecePanel()
+	public void attachBlankPanel()
 	{
-		JPanel blank = new JPanel();
-		JPanel piecePanel = new JPanel();
-		JLabel[] label = new JLabel[4];
+		JPanel bPanel;
 
-		String[] pieces = {"resources/b.jpg", "resources/r.jpg", "resources/y.jpg", "resources/g.jpg"};
-
+		blank = new JPanel();
 		blank.setBackground(Color.BLACK);
-		piecePanel.setLayout(new GridLayout(4,1));
-
-		for(int x = 0; x < 4; x++)
-		{
-			pieceImages[x] = new ImageIcon(pieces[x]);
-			piecePanel.add(new JLabel(pieceImages[x]));
-		}
-
-		piecesInitialPlacementPanel = new JPanel();
-		piecesInitialPlacementPanel.setLayout(new BorderLayout(2,2));
-		piecesInitialPlacementPanel.add(blank, BorderLayout.CENTER);
-		piecesInitialPlacementPanel.add(piecePanel, BorderLayout.SOUTH);
-
+		blank.setPreferredSize(new Dimension(60,60));
 	}
 
 	public void attachBoardPanel()
@@ -76,19 +63,10 @@ public class GameFrame extends JFrame
         int[] tiles = pg.getTiles();
 		board = new BoardPanel(tiles);
 
-		System.out.println("Tile Values");
-        int ctr = 0;
-        for (int i : tiles) {
-            System.out.print("Number " + ++ctr + ": ");
-            System.out.println(i);
-        }
-
-		System.out.println("\nLoading Program...\nProgram Run Success.\n");
-
-		colorOfLines[0] = new Color(0,0,128);
-		colorOfLines[1] = new Color(0,64,255);
-		colorOfLines[2] = new Color(0,0,192);
-		colorOfLines[3] = new Color(0,192,255);
+		colorOfLines[0] = new Color(96,96,96);
+		colorOfLines[1] = new Color(30,30,30);
+		colorOfLines[2] = new Color(0,0,0);
+		colorOfLines[3] = new Color(255,255,255);
 
 		int[] sizes = {4, 4, 8, 3};
 
@@ -98,7 +76,7 @@ public class GameFrame extends JFrame
 		compound1 = BorderFactory.createCompoundBorder(coloredLines[0], coloredLines[1]);
 		compound2 = BorderFactory.createCompoundBorder(coloredLines[2], coloredLines[3]);
 		compound3 = BorderFactory.createCompoundBorder(compound2, compound1);
-		titleLogo = new JLabel(new ImageIcon("SL.jpg"));
+		titleLogo = new JLabel(new ImageIcon("resources/SL.jpg"));
 
 		boardAndTitle = new JPanel();
 		boardAndTitle.setBorder(compound3);

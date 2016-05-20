@@ -20,19 +20,12 @@ public class PointGeneration
         // Make sure there is no duplicate tiles
         for (int pointCtr = 0; pointCtr < pointLimit; pointCtr++) {
             for (int elemCtr = 0; elemCtr < pointLimit; elemCtr++) {
-                System.out.println("PVal: " + tiles[pointCtr] + "| SVal: " + tiles[elemCtr]);
                 if (elemCtr == pointCtr) {
                     continue;
                 }
 
                 if (tiles[pointCtr] == tiles[elemCtr]) {
-                    System.out.println("Something equal");
-                    if (tiles[pointCtr] % 2 >= 0 &&
-                        tiles[pointCtr] % 2 < 9) {
-                        tiles[pointCtr]++;
-                    } else if (tiles[pointCtr] % 2 == 9) {
-                        tiles[pointCtr]--;
-                    }
+                    tiles[pointCtr] = this.generator.nextInt(100);
                 }
             }
         }
@@ -45,8 +38,7 @@ public class PointGeneration
         int[] tiles = new int[pointLimit];
         int position = 0;
         for (int tileCtr = 0; tileCtr < pointLimit; tileCtr++, position++) {
-            position = (position % 3) + 1;
-            tiles[tileCtr] = this.generator.nextInt(30) + (10 * position);
+            tiles[tileCtr] = this.generator.nextInt(97) + 1;
         }
 
         return pointCorrection(tiles);

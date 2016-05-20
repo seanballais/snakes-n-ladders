@@ -8,9 +8,12 @@ public class Music
 	InputStream backMusic = null;
 	AudioStream music = null;
 
+	InputStream diceBackMusic = null;
+	AudioStream diceMusic = null;
+
 	public Music()
 	{
-		String filename = "resources/TearsDontFall.wav";		
+		String filename = "resources/TearsDontFall.wav";
 
 		try
 		{
