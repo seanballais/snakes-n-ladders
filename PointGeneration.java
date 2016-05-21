@@ -41,8 +41,8 @@ public class PointGeneration
             tiles[tileCtr] = this.generator.nextInt(97) + 1;
         }
 
-        tiles[pointLimit - 2] = this.generator.nextInt(2) + 96;
-        tiles[pointLimit - 1] = this.generator.nextInt(2) + 2;
+        tiles[pointLimit - 2] = this.generator.nextInt(2) + 97;
+        tiles[pointLimit - 1] = this.generator.nextInt(2) + 1;
 
         return pointCorrection(tiles);
     }
