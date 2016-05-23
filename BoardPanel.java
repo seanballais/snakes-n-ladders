@@ -5,14 +5,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.BasicStroke;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.BorderFactory;
+import javax.swing.Timer;
 
 public class BoardPanel extends JPanel
 {
@@ -60,9 +60,6 @@ public class BoardPanel extends JPanel
 				tiles[ctr].setBackground(colors[colorCtr]);
 				tiles[ctr].add(tileNo[ctr]);
 
-				MouseHandler mh = new MouseHandler();
-				this.tiles[ctr].addMouseListener(mh);
-
 				add(tiles[ctr]);
 
 				// Add a position array to easily determine the XY coordinates
@@ -80,14 +77,18 @@ public class BoardPanel extends JPanel
 			}
 			ctr -= 10;
 		}
-	}
 
-	private class MouseHandler extends MouseAdapter
-	{
-		public void mouseEntered(MouseEvent ev)
-		{
-			repaint();
-		}
+		Timer timer = new Timer(16,
+			new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent ev)
+				{
+					repaint();
+				}
+			}
+		);
+		timer.start();
 	}
 
 	public void paint(Graphics g)

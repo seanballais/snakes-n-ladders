@@ -265,15 +265,11 @@ public class GameProper implements ActionListener
 		if (onLadderTile(nextTile)) {
             pairTile = getPairTile(nextTile, BoardPanel.ladderTiles);
 			if (pairTile > nextTile) {
-				System.out.println("Current tile (ladder): " + nextTile);
-				System.out.println("Next move (ladder): " + pairTile);
 				return pairTile;
 			}
 		} else if (onSnakeTile(nextTile)) {
             pairTile = getPairTile(nextTile, BoardPanel.snakeTiles);
 			if (pairTile < nextTile) {
-				System.out.println("Current tile (snake): " + nextTile);
-				System.out.println("Next move (snake): " + pairTile);
 				return pairTile;
 			}
 		}
@@ -284,7 +280,6 @@ public class GameProper implements ActionListener
 	public boolean onLadderTile(int tile)
 	{
 		for (int ladderCtr = 0; ladderCtr < BoardPanel.ladderTiles.length; ladderCtr++) {
-            System.out.println("Value for ladder: " + BoardPanel.ladderTiles[ladderCtr]);
 			// Check if the player is on a lower ladder tile
 			if (tile == BoardPanel.ladderTiles[ladderCtr]) {
 				return true;
