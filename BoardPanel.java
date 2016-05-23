@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.BasicStroke;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.geom.QuadCurve2D;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.Icon;
@@ -120,18 +121,26 @@ public class BoardPanel extends JPanel
 				ladderLine2_y + 27
 			);
 
-			snakeLine1_x = (getTilePoint(this.snakeTiles[objCtr]).x * 62) + 2;
-	        snakeLine1_y = (getTilePoint(this.snakeTiles[objCtr]).y * 54) + 2;
-	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 2;
-	        snakeLine2_y = (getTilePoint(this.snakeTiles[objCtr + 1]).y * 54) + 2;
+			snakeLine1_x = (getTilePoint(this.snakeTiles[objCtr]).x * 62) + 33;
+	        snakeLine1_y = (getTilePoint(this.snakeTiles[objCtr]).y * 54) + 29;
+	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 33;
+	        snakeLine2_y = (getTilePoint(this.snakeTiles[objCtr + 1]).y * 54) + 29;
 			g2.setColor(Color.YELLOW);
-			g2.drawLine(
-				snakeLine1_x + 31,
-				snakeLine1_y + 27,
-				snakeLine2_x + 31,
-				snakeLine2_y + 27
+			QuadCurve2D snake = new QuadCurve2D.Float(
+				snakeLine1_x,
+				snakeLine1_y,
+				getMidpoint(snakeLine2_x, snakeLine1_x) - 2,
+				getMidpoint(snakeLine2_y, snakeLine1_y) - 2,
+				snakeLine2_x,
+				snakeLine2_y
 			);
+			g2.draw(snake);
 		}
+	}
+
+	private int getMidpoint(int point2, int point1)
+	{
+		return (point2 - point1) / 2;
 	}
 
     private Point getTilePoint(int tile)
