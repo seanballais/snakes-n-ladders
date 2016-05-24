@@ -38,11 +38,11 @@ public class BoardPanel extends JPanel
 
 		tilePosition = new int[10][10];
 
-		this.ladderTiles = new int[6];
-		this.snakeTiles = new int[6];
-		for (int i = 0; i < 6; i++) {
+		this.ladderTiles = new int[10];
+		this.snakeTiles = new int[10];
+		for (int i = 0; i < 10; i++) {
 			this.ladderTiles[i] = this.objTiles[i];
-			this.snakeTiles[i] = this.objTiles[i + 6];
+			this.snakeTiles[i] = this.objTiles[i + 10];
 		}
 
 		for(int x = 1; x <= 10; x++)
@@ -108,7 +108,7 @@ public class BoardPanel extends JPanel
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(5));
 
-		for (int objCtr = 0; objCtr < 5; objCtr += 2) {
+		for (int objCtr = 0; objCtr < 9; objCtr += 2) {
 			ladderLine1_x = (getTilePoint(this.ladderTiles[objCtr]).x * 62) + 2;
 	        ladderLine1_y = (getTilePoint(this.ladderTiles[objCtr]).y * 54) + 2;
 	        ladderLine2_x = (getTilePoint(this.ladderTiles[objCtr + 1]).x * 62) + 2;
@@ -129,8 +129,8 @@ public class BoardPanel extends JPanel
 			QuadCurve2D snake = new QuadCurve2D.Float(
 				snakeLine1_x,
 				snakeLine1_y,
-				getMidpoint(snakeLine2_x, snakeLine1_x) - 2,
-				getMidpoint(snakeLine2_y, snakeLine1_y) - 2,
+				getMidpoint(snakeLine2_x, snakeLine1_x) - 1,
+				getMidpoint(snakeLine2_y, snakeLine1_y) - 1,
 				snakeLine2_x,
 				snakeLine2_y
 			);

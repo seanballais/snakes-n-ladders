@@ -6,13 +6,13 @@ import static java.lang.Math.abs;
 public class PointGeneration
 {
     private Random generator = new Random();
-    private int pointLimit = 12;
+    private int pointLimit = 20;
 
     public PointGeneration()
     {
         Random seedGenerator = new Random();
         this.generator.setSeed(seedGenerator.nextInt(32000));
-        this.pointLimit = 12;
+        this.pointLimit = 20;
     }
 
     public int[] pointCorrection(int[] tiles)
