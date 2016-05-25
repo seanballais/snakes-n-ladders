@@ -121,6 +121,29 @@ public class BoardPanel extends JPanel
 				ladderLine2_y + 27
 			);
 
+			// Draw the ladder
+			int ladder_x2 = 0;
+			int ladder_x1 = 0;
+			int ladder_y2 = 0;
+			int ladder_y1 = 0;
+			if (ladderLine1_x > ladderLine2_x) {
+				ladder_x2 = ladderLine1_x;
+				ladder_x1 = ladderLine2_x;
+			} else {
+				ladder_x1 = ladderLine1_x;
+				ladder_x2 = ladderLine2_x;
+			}
+
+			if (ladderLine1_y > ladderLine2_y) {
+				ladder_y2 = ladderLine1_y;
+				ladder_y1 = ladderLine2_y;
+			} else {
+				ladder_y1 = ladderLine1_y;
+				ladder_y2 = ladderLine2_y;
+			}
+
+			//int distance = Math.sqrt();
+
 			snakeLine1_x = (getTilePoint(this.snakeTiles[objCtr]).x * 62) + 33;
 	        snakeLine1_y = (getTilePoint(this.snakeTiles[objCtr]).y * 54) + 29;
 	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 33;
