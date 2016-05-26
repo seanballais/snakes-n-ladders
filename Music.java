@@ -13,7 +13,7 @@ public class Music
 
 	public Music()
 	{
-		String filename = "resources/TearsDontFall.wav";
+		String filename = "resources/SpringField.wav";
 
 		try
 		{
@@ -35,5 +35,27 @@ public class Music
 
 		AudioPlayer.player.start(music);
 	}
-
+	
+	public Music(String m)
+	{		
+		try
+		{
+			diceBackMusic = new FileInputStream(m);
+		}
+		catch(FileNotFoundException e) {
+			
+			System.out.println("FileNotFoundException : Failed to Play SoundTrack.");
+		}
+		
+		try
+		{
+			diceMusic = new AudioStream(diceBackMusic);
+		}
+		catch (IOException e) {
+			
+			System.out.println("IOException found.");
+		}
+		
+		AudioPlayer.player.start(diceMusic);
+	}
 }

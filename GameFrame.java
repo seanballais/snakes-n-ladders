@@ -2,21 +2,21 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
-import java.awt.event.*;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.border.*;
-import javax.swing.BorderFactory;
 import javax.swing.UIManager;
 
 public class GameFrame extends JFrame
 {
-	private JPanel blank;
 	private JLabel titleLogo;
 	private JPanel boardAndTitle;
 
@@ -35,28 +35,20 @@ public class GameFrame extends JFrame
 		setLayout(new BorderLayout(5,5));
 		setBackground(Color.BLACK);
 
-		attachBlankPanel();
 		attachBoardPanel();
 
 		sidePanel = new SidePanels(compound3);
 		sidePanel.setPreferredSize(new Dimension(300,300));
+		sidePanel.createLeftPanel();
 
-		add(blank, BorderLayout.WEST);
+		add(SidePanels.leftPanel, BorderLayout.WEST);
 		add(boardAndTitle, BorderLayout.CENTER);
 		add(sidePanel,BorderLayout.EAST);
 
 		new Music();
 	}
-
-	public void attachBlankPanel()
-	{
-		JPanel bPanel;
-
-		blank = new JPanel();
-		blank.setBackground(Color.BLACK);
-		blank.setPreferredSize(new Dimension(60,60));
-	}
-
+	
+	
 	public void attachBoardPanel()
 	{
 		PointGeneration pg = new PointGeneration();

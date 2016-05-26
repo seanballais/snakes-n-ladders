@@ -1,21 +1,32 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 
 public class GameProper implements ActionListener
 {
-	private int diceNo;
+	public static int diceNo;
+	public static int score1 = 0, score2 = 0;
+	public static int ctrForTile1 = 0, ctrForTile2 = 0;
 	public static int ctrForTurn = 0, backCtr;
-	private static int score1 = 0, score2 = 0;
-	private static int ctrForTile1 = 0, ctrForTile2 = 0;
-	public String[] jpgs = {"resources/b.png", "resources/r.png", "resources/y.png", "resources/g.png"};
 
 	private JPanel snakePic;
 	private JFrame anotherRound;
 	private JButton playAgain, endGame;
 	private JLabel winnerLabel, scores, title, scoreLabel;
+	
 	private JPanel[] confirmationPanels = new JPanel[3];
+	public static String[] jpgs = {"resources/b.png", "resources/r.png", "resources/y.png", "resources/g.png"};
 
 	public GameProper()
 	{
@@ -32,11 +43,6 @@ public class GameProper implements ActionListener
 
 	public void setPieceOnBoard()
 	{
-		SidePanels.currentPlayerAndTilePosition[2].setText(SetPlayerInfo.p1);
-
-		for(int x = 0; x < 4; x++)
-			SidePanels.currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[0]]);
-
 		BoardPanel.tileNo[0].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
 		BoardPanel.tileNo[0].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
 	}
@@ -48,25 +54,27 @@ public class GameProper implements ActionListener
 			BoardPanel.tileNo[ctrForTile1].setIcon(null);
 
 			if(ctrForTile1 == ctrForTile2)
-				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
+				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));				
+							
 
 			int oldTilePosition = ctrForTile1;
 			ctrForTile1 = nextMove(ctrForTile1 + diceNo); // Replace 1 with diceNo
-			if (oldTilePosition + diceNo != ctrForTile1) { // Replace 1 with diceNo
-				JOptionPane.showMessageDialog(null, "Player 1 teleported to tile " + (ctrForTile1 + 1) + ".");
-			}
 
 			if(ctrForTile1 < 99)
-				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
+				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));			
+			if (oldTilePosition + diceNo != ctrForTile1) // Replace 1 with diceNo
+				JOptionPane.showMessageDialog(null, SetPlayerInfo.p1 + " teleported to tile " + (ctrForTile1 + 1) + ".");
+
 			else
 			{
 				if(ctrForTile1 > 99)
 				{
 					int oldTilePosition1 = ctrForTile1;
 					ctrForTile1 = nextMove(99 - (ctrForTile1 - 99));
-					if (oldTilePosition1 + diceNo != ctrForTile1) { // Replace 1 with diceNo
-						JOptionPane.showMessageDialog(null, "Player 1 teleported to tile " + (ctrForTile1 + 1) + ".");
-					}
+					
+					if (oldTilePosition1 + diceNo != ctrForTile1)
+						JOptionPane.showMessageDialog(null, SetPlayerInfo.p1 + " teleported to tile " + (ctrForTile1 + 1) + ".");
+					
 					BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
 
 				}else if(ctrForTile1 == 99) {
@@ -95,22 +103,22 @@ public class GameProper implements ActionListener
 
 			int oldTilePosition = ctrForTile2;
 	    	ctrForTile2 = nextMove(ctrForTile2 + diceNo); // Replace 1 with diceNo
-	        if (oldTilePosition + diceNo != ctrForTile2) { // Replace 1 with diceNo
-	            JOptionPane.showMessageDialog(null, "Player 2 teleported to tile " + (ctrForTile2 + 1) + ".");
-	        }
 
 			if(ctrForTile2 < 99)
-				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
+				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));			
+	        if (oldTilePosition + diceNo != ctrForTile2) // Replace 1 with diceNo
+	            JOptionPane.showMessageDialog(null, SetPlayerInfo.p2 + " teleported to tile " + (ctrForTile2 + 1) + ".");
+
 			else
 			{
 				if(ctrForTile2 > 99)
 				{
-					int oldTilePosition2 = ctrForTile1;
+					int oldTilePosition2 = ctrForTile2;
 					ctrForTile2 = nextMove(99 - (ctrForTile2 - 99));
-					if (oldTilePosition2 + diceNo != ctrForTile1) { // Replace 1 with diceNo
-						JOptionPane.showMessageDialog(null, "Player 2 teleported to tile " + (ctrForTile2 + 1) + ".");
-					}
-
+					
+					if (oldTilePosition2 + diceNo != ctrForTile2)
+						JOptionPane.showMessageDialog(null, SetPlayerInfo.p2 + " teleported to tile " + (ctrForTile2 + 1) + ".");
+					
 					BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
 
 				}else if(ctrForTile2 == 99) {
@@ -135,7 +143,8 @@ public class GameProper implements ActionListener
 	public void playAgainConfirmation(String w)
 	{
 		JPanel labelPanels = new JPanel();
-
+				
+		SidePanels.pause.setEnabled(false);	
 		for(int x = 0 ; x < 3 ; x++)
 		{
 			confirmationPanels[x] = new JPanel();
@@ -161,18 +170,20 @@ public class GameProper implements ActionListener
 		scores = new JLabel(String.format("%d       ::       %d", score1, score2), SwingConstants.CENTER);
 		scoreLabel = new JLabel(String.format("%s            %s", SetPlayerInfo.p1, SetPlayerInfo.p2), SwingConstants.CENTER);
 
-		winnerLabel.setFont(eras);
 		scores.setFont(eras);
 		scoreLabel.setFont(eras);
-		winnerLabel.setForeground(orange);
+		winnerLabel.setFont(eras);
+		
 		scores.setForeground(orange);
 		scoreLabel.setForeground(orange);
+		winnerLabel.setForeground(orange);
 
 		playAgain = new JButton("Play More");
-		endGame = new JButton("End Game");
 		playAgain.setFont(eras2);
-		endGame.setFont(eras2);
 		playAgain.addActionListener(this);
+		
+		endGame = new JButton("End Game");
+		endGame.setFont(eras2);
 		endGame.addActionListener(this);
 
 		confirmationPanels[0].add(title, BorderLayout.CENTER);
@@ -214,7 +225,8 @@ public class GameProper implements ActionListener
 			ctrForTile2 = 0;
 			ctrForTurn = 0;
 			diceNo = 0;
-
+	
+			SidePanels.pause.setEnabled(true);
 			SidePanels.rollDice.setEnabled(true);
 			setPieceOnBoard();
 
@@ -228,7 +240,7 @@ public class GameProper implements ActionListener
 			else if(score1 < score2)
 				winnerLabel.setText(SetPlayerInfo.p2 + " wins!");
 			else
-				winnerLabel.setText("Draw Match.   Shake Hands.");
+				winnerLabel.setText("Draw Match. Shake Hands.");
 
 			backCtr++;
 			endGame.setText("Back");
@@ -273,14 +285,13 @@ public class GameProper implements ActionListener
 		// Checks and moves the piece depending on the tile
 		if (onLadderTile(nextTile)) {
             pairTile = getPairTile(nextTile, BoardPanel.ladderTiles);
-			if (pairTile > nextTile) {
+			if (pairTile > nextTile) 
 				return pairTile;
-			}
+			
 		} else if (onSnakeTile(nextTile)) {
             pairTile = getPairTile(nextTile, BoardPanel.snakeTiles);
-			if (pairTile < nextTile) {
+			if (pairTile < nextTile)
 				return pairTile;
-			}
 		}
 
 		return nextTile;
@@ -319,11 +330,11 @@ public class GameProper implements ActionListener
 
 	public boolean onSnakeTile(int tile)
 	{
-		for (int ladderCtr = 0; ladderCtr < BoardPanel.snakeTiles.length; ladderCtr++) {
+		for (int ladderCtr = 0; ladderCtr < BoardPanel.snakeTiles.length; ladderCtr++) 
+		{
 			// Check if the player is on a lower ladder tile
-			if (tile == BoardPanel.snakeTiles[ladderCtr]) {
+			if (tile == BoardPanel.snakeTiles[ladderCtr])
 				return true;
-			}
 		}
 
 		return false;

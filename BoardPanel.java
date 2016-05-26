@@ -1,35 +1,36 @@
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.Point;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Graphics2D;
 import java.awt.BasicStroke;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.geom.QuadCurve2D;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 public class BoardPanel extends JPanel
 {
-	public JPanel[] tiles = new JPanel[100];
-
-	private Color paleGreen = new Color(128, 191, 0);
-	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA,
-							  paleGreen, Color.BLUE, Color.WHITE};
+	private int colorCtr = 0;
+	private static int ctr = 99;
+	
 	private int[][] tilePosition;
-
 	public static int[] objTiles;
 	public static int[] ladderTiles;
-	public static int[] snakeTiles;
+	public static int[] snakeTiles;	
+	
+	public static JPanel[] tiles = new JPanel[100];
   	public static JLabel[] tileNo = new JLabel[100];
-	private static int ctr = 99;
-	private int colorCtr = 0;
+
+	private Color paleGreen = new Color(128, 191, 0);
+	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA, 
+								paleGreen, Color.BLUE, Color.WHITE};
 
 	public BoardPanel(int[] objTiles)
 	{
@@ -126,6 +127,7 @@ public class BoardPanel extends JPanel
 			int ladder_x1 = 0;
 			int ladder_y2 = 0;
 			int ladder_y1 = 0;
+			
 			if (ladderLine1_x > ladderLine2_x) {
 				ladder_x2 = ladderLine1_x;
 				ladder_x1 = ladderLine2_x;

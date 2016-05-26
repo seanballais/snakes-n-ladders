@@ -18,11 +18,12 @@ public class PointGeneration
     public int[] pointCorrection(int[] tiles)
     {
         // Make sure there is no duplicate tiles
-        for (int pointCtr = 0; pointCtr < pointLimit; pointCtr++) {
-            for (int elemCtr = 0; elemCtr < pointLimit; elemCtr++) {
-                if (elemCtr == pointCtr) {
+        for (int pointCtr = 0; pointCtr < pointLimit; pointCtr++)
+		{
+            for (int elemCtr = 0; elemCtr < pointLimit; elemCtr++) 
+			{
+                if (elemCtr == pointCtr)
                     continue;
-                }
 
                 if (tiles[pointCtr] == tiles[elemCtr]) {
                     tiles[pointCtr] = this.generator.nextInt(100);
@@ -37,13 +38,13 @@ public class PointGeneration
     {
         int[] tiles = new int[pointLimit];
         int position = 0;
-        for (int tileCtr = 0; tileCtr < pointLimit; tileCtr++, position++) {
+		
+        for (int tileCtr = 0; tileCtr < pointLimit; tileCtr++, position++)
             tiles[tileCtr] = this.generator.nextInt(97) + 1;
-        }
 
-        tiles[pointLimit - 2] = this.generator.nextInt(2) + 97;
-        tiles[pointLimit - 1] = this.generator.nextInt(2);
-
+		tiles[pointLimit - 2] = this.generator.nextInt(2) + 97;
+		tiles[pointLimit - 1] = this.generator.nextInt(2);
+		
         return pointCorrection(tiles);
     }
 }
