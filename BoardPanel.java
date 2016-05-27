@@ -1,19 +1,25 @@
+import java.io.File;
+import java.io.IOException;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
-import java.awt.geom.CubicCurve2D;
+import java.awt.geom.AffineTransform;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.AffineTransformOp;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import javax.imageio.ImageIO;
 
 public class BoardPanel extends JPanel
 {
@@ -31,6 +37,7 @@ public class BoardPanel extends JPanel
 	private Color paleGreen = new Color(128, 191, 0);
 	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA,
 								paleGreen, Color.BLUE, Color.WHITE};
+	private Boolean printed = false;
 
 	public BoardPanel(int[] objTiles)
 	{
@@ -107,7 +114,14 @@ public class BoardPanel extends JPanel
         int snakeLine2_y = 0;
 
         Graphics2D g2 = (Graphics2D) g;
-		for (int objCtr = 0; objCtr < 9; objCtr += 2) {
+		BufferedImage ladderImage = null;
+		try {
+			ladderImage = ImageIO.read(new File("resources/ladder.png"));
+		} catch (IOException e) {
+			System.out.println("File IO error.");
+		}
+
+		for (int objCtr = 0; objCtr < 1; objCtr += 2) {
 			g2.setStroke(new BasicStroke(5));
 			ladderLine1_x = (getTilePoint(this.ladderTiles[objCtr]).x * 62) + 2;
 	        ladderLine1_y = (getTilePoint(this.ladderTiles[objCtr]).y * 54) + 2;
@@ -119,15 +133,34 @@ public class BoardPanel extends JPanel
 	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 33;
 	        snakeLine2_y = (getTilePoint(this.snakeTiles[objCtr + 1]).y * 54) + 29;
 
-			int ladderLength = Math.sqrt(
+			int ladderLength = (int) Math.sqrt(
 				Math.pow((ladderLine2_x - ladderLine1_x), 2) +
 				Math.pow((ladderLine2_y - ladderLine1_x), 2)
 			);
 
-			int snakeLength = Math.sqrt(
+			int ladderDelta_x = Math.abs(ladderLine2_x - ladderLine1_x);
+			int ladderDelta_y = Math.abs(ladderLine2_y - ladderLine1_y);
+			int ladderTheta = (int) Math.atan2(ladderDelta_y, ladderDelta_x);
+
+			int snakeLength = (int) Math.sqrt(
 				Math.pow((snakeLine2_x - snakeLine1_x), 2) +
 				Math.pow((snakeLine2_y - snakeLine1_y), 2)
 			);
+
+			int snakeDelta_x = Math.abs(snakeLine2_x - snakeLine1_x);
+			int snakeDelta_y = Math.abs(snakeLine2_y - snakeLine1_y);
+			int snakeTheta = (int) Math.atan2(snakeDelta_y, snakeDelta_x);
+
+			if (printed == false) {
+				System.out.println("Values");
+				System.out.println("\tLadder Point 1: (" + ladderLine1_x + ", " + ladderLine1_y + ")");
+				System.out.println("\tLadder Point 2: (" + ladderLine2_x + ", " + ladderLine2_y + ")");
+				System.out.println("\tLadder Delta: (" + ladderDelta_x + ", " + ladderDelta_y + ")");
+				System.out.println("\tLadder Length: " + ladderLength);
+				System.out.println("\tLadder Theta: " + snakeTheta + "°");
+
+				printed = true;
+			}
 		}
 	}
 
