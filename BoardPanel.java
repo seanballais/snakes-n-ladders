@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
-import java.awt.geom.QuadCurve2D;
+import java.awt.geom.CubicCurve2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
@@ -19,17 +19,17 @@ public class BoardPanel extends JPanel
 {
 	private int colorCtr = 0;
 	private static int ctr = 99;
-	
+
 	private int[][] tilePosition;
 	public static int[] objTiles;
 	public static int[] ladderTiles;
-	public static int[] snakeTiles;	
-	
+	public static int[] snakeTiles;
+
 	public static JPanel[] tiles = new JPanel[100];
   	public static JLabel[] tileNo = new JLabel[100];
 
 	private Color paleGreen = new Color(128, 191, 0);
-	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA, 
+	private Color[] colors = {Color.RED, Color.YELLOW, Color.MAGENTA,
 								paleGreen, Color.BLUE, Color.WHITE};
 
 	public BoardPanel(int[] objTiles)
@@ -107,65 +107,28 @@ public class BoardPanel extends JPanel
         int snakeLine2_y = 0;
 
         Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(5));
-
 		for (int objCtr = 0; objCtr < 9; objCtr += 2) {
+			g2.setStroke(new BasicStroke(5));
 			ladderLine1_x = (getTilePoint(this.ladderTiles[objCtr]).x * 62) + 2;
 	        ladderLine1_y = (getTilePoint(this.ladderTiles[objCtr]).y * 54) + 2;
 	        ladderLine2_x = (getTilePoint(this.ladderTiles[objCtr + 1]).x * 62) + 2;
 	        ladderLine2_y = (getTilePoint(this.ladderTiles[objCtr + 1]).y * 54) + 2;
-			g2.setColor(Color.BLACK);
-			g2.drawLine(
-				ladderLine1_x + 31,
-				ladderLine1_y + 27,
-				ladderLine2_x + 31,
-				ladderLine2_y + 27
-			);
-
-			// Draw the ladder
-			int ladder_x2 = 0;
-			int ladder_x1 = 0;
-			int ladder_y2 = 0;
-			int ladder_y1 = 0;
-			
-			if (ladderLine1_x > ladderLine2_x) {
-				ladder_x2 = ladderLine1_x;
-				ladder_x1 = ladderLine2_x;
-			} else {
-				ladder_x1 = ladderLine1_x;
-				ladder_x2 = ladderLine2_x;
-			}
-
-			if (ladderLine1_y > ladderLine2_y) {
-				ladder_y2 = ladderLine1_y;
-				ladder_y1 = ladderLine2_y;
-			} else {
-				ladder_y1 = ladderLine1_y;
-				ladder_y2 = ladderLine2_y;
-			}
-
-			//int distance = Math.sqrt();
 
 			snakeLine1_x = (getTilePoint(this.snakeTiles[objCtr]).x * 62) + 33;
 	        snakeLine1_y = (getTilePoint(this.snakeTiles[objCtr]).y * 54) + 29;
 	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 33;
 	        snakeLine2_y = (getTilePoint(this.snakeTiles[objCtr + 1]).y * 54) + 29;
-			g2.setColor(Color.YELLOW);
-			QuadCurve2D snake = new QuadCurve2D.Float(
-				snakeLine1_x,
-				snakeLine1_y,
-				getMidpoint(snakeLine2_x, snakeLine1_x) - 1,
-				getMidpoint(snakeLine2_y, snakeLine1_y) - 1,
-				snakeLine2_x,
-				snakeLine2_y
-			);
-			g2.draw(snake);
-		}
-	}
 
-	private int getMidpoint(int point2, int point1)
-	{
-		return (point2 - point1) / 2;
+			int ladderLength = Math.sqrt(
+				Math.pow((ladderLine2_x - ladderLine1_x), 2) +
+				Math.pow((ladderLine2_y - ladderLine1_x), 2)
+			);
+
+			int snakeLength = Math.sqrt(
+				Math.pow((snakeLine2_x - snakeLine1_x), 2) +
+				Math.pow((snakeLine2_y - snakeLine1_y), 2)
+			);
+		}
 	}
 
     private Point getTilePoint(int tile)
