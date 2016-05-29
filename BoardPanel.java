@@ -136,13 +136,13 @@ public class BoardPanel extends JPanel
 			int ladderDistance = (int) distance(ladderLine1, ladderLine2);
 			int snakeDistane = (int) distance(ladderLine2, ladderLine1);
 
-			// Scale the image height first to the distance
-			// between of the two points
 			ladderImage = resizeImage(
 				ladderImage,
 				ladderImage.getWidth(),
 				ladderDistance
 			);
+
+			ladderImage = rotate(ladderImage, ladderAngle);
 
 			if (ladderLine1.y < ladderLine2.y) {
 				g2.drawImage(ladderImage, ladderLine1.x, ladderLine1.y, null);
@@ -152,7 +152,21 @@ public class BoardPanel extends JPanel
 		}
 	}
 
-	public static BufferedImage resizeImage(final Image image, int width, int height)
+
+	private BufferedImage rotate(BufferedImage img, int angle)
+	{
+        int w = img.getWidth();
+        int h = img.getHeight();
+
+		BufferedImage dimg = dimg = new BufferedImage(w, h, img.getType());
+        Graphics2D g = dimg.createGraphics();
+
+		g.rotate(Math.toRadians(angle), w/2, h/2);
+        g.drawImage(img, null, 0, 0);
+        return dimg;
+    }
+
+	private BufferedImage resizeImage(final Image image, int width, int height)
 	{
         final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D graphics2D = bufferedImage.createGraphics();
