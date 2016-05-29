@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
+import java.awt.AlphaComposite;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -104,14 +106,10 @@ public class BoardPanel extends JPanel
 	{
 		super.paint(g);
 
-        int ladderLine1_x = 0;
-        int ladderLine1_y = 0;
-        int ladderLine2_x = 0;
-        int ladderLine2_y = 0;
-		int snakeLine1_x = 0;
-        int snakeLine1_y = 0;
-        int snakeLine2_x = 0;
-        int snakeLine2_y = 0;
+		Point ladderLine1 = new Point(0, 0);
+		Point ladderLine2 = new Point(0, 0);
+		Point snakeLine1 = new Point(0, 0);
+		Point snakeLine2 = new Point(0, 0);
 
         Graphics2D g2 = (Graphics2D) g;
 		BufferedImage ladderImage = null;
@@ -123,46 +121,82 @@ public class BoardPanel extends JPanel
 
 		for (int objCtr = 0; objCtr < 1; objCtr += 2) {
 			g2.setStroke(new BasicStroke(5));
-			ladderLine1_x = (getTilePoint(this.ladderTiles[objCtr]).x * 62) + 2;
-	        ladderLine1_y = (getTilePoint(this.ladderTiles[objCtr]).y * 54) + 2;
-	        ladderLine2_x = (getTilePoint(this.ladderTiles[objCtr + 1]).x * 62) + 2;
-	        ladderLine2_y = (getTilePoint(this.ladderTiles[objCtr + 1]).y * 54) + 2;
+			ladderLine1.x = getTilePoint(this.ladderTiles[objCtr]).x * 57;
+	        ladderLine1.y = getTilePoint(this.ladderTiles[objCtr]).y * 53;
+	        ladderLine2.x = getTilePoint(this.ladderTiles[objCtr + 1]).x * 57;
+	        ladderLine2.y = getTilePoint(this.ladderTiles[objCtr + 1]).y * 53;
 
-			snakeLine1_x = (getTilePoint(this.snakeTiles[objCtr]).x * 62) + 33;
-	        snakeLine1_y = (getTilePoint(this.snakeTiles[objCtr]).y * 54) + 29;
-	        snakeLine2_x = (getTilePoint(this.snakeTiles[objCtr + 1]).x * 62) + 33;
-	        snakeLine2_y = (getTilePoint(this.snakeTiles[objCtr + 1]).y * 54) + 29;
+			snakeLine1.x = getTilePoint(this.snakeTiles[objCtr]).x * 57;
+	        snakeLine1.y = getTilePoint(this.snakeTiles[objCtr]).y * 53;
+	        snakeLine2.x = getTilePoint(this.snakeTiles[objCtr + 1]).x * 57;
+	        snakeLine2.y = getTilePoint(this.snakeTiles[objCtr + 1]).y * 53;
 
-			int ladderLength = (int) Math.sqrt(
-				Math.pow((ladderLine2_x - ladderLine1_x), 2) +
-				Math.pow((ladderLine2_y - ladderLine1_x), 2)
+			int ladderAngle = (int) getAngleFromPoint(ladderLine1, ladderLine2);
+			int snakeAngle = (int) getAngleFromPoint(snakeLine1, snakeLine2);
+			int ladderDistance = (int) distance(ladderLine1, ladderLine2);
+			int snakeDistane = (int) distance(ladderLine2, ladderLine1);
+
+			// Scale the image height first to the distance
+			// between of the two points
+			ladderImage = resizeImage(
+				ladderImage,
+				ladderImage.getWidth(),
+				ladderDistance
 			);
 
-			int ladderDelta_x = Math.abs(ladderLine2_x - ladderLine1_x);
-			int ladderDelta_y = Math.abs(ladderLine2_y - ladderLine1_y);
-			int ladderTheta = (int) Math.atan2(ladderDelta_y, ladderDelta_x);
-
-			int snakeLength = (int) Math.sqrt(
-				Math.pow((snakeLine2_x - snakeLine1_x), 2) +
-				Math.pow((snakeLine2_y - snakeLine1_y), 2)
-			);
-
-			int snakeDelta_x = Math.abs(snakeLine2_x - snakeLine1_x);
-			int snakeDelta_y = Math.abs(snakeLine2_y - snakeLine1_y);
-			int snakeTheta = (int) Math.atan2(snakeDelta_y, snakeDelta_x);
-
-			if (printed == false) {
-				System.out.println("Values");
-				System.out.println("\tLadder Point 1: (" + ladderLine1_x + ", " + ladderLine1_y + ")");
-				System.out.println("\tLadder Point 2: (" + ladderLine2_x + ", " + ladderLine2_y + ")");
-				System.out.println("\tLadder Delta: (" + ladderDelta_x + ", " + ladderDelta_y + ")");
-				System.out.println("\tLadder Length: " + ladderLength);
-				System.out.println("\tLadder Theta: " + snakeTheta + "°");
-
-				printed = true;
+			if (ladderLine1.y < ladderLine2.y) {
+				g2.drawImage(ladderImage, ladderLine1.x, ladderLine1.y, null);
+			} else if (ladderLine2.y < ladderLine1.y) {
+				g2.drawImage(ladderImage, ladderLine2.x, ladderLine2.y, null);
 			}
 		}
 	}
+
+	public static BufferedImage resizeImage(final Image image, int width, int height)
+	{
+        final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawImage(image, 0, 0, width, height, null);
+        graphics2D.dispose();
+
+        return bufferedImage;
+    }
+
+	private double getAngleFromPoint(Point firstPoint, Point secondPoint)
+	{
+    	if (secondPoint.x > firstPoint.x) { //above 0 to 180 degrees
+        	return (Math.atan2((secondPoint.x - firstPoint.x), (firstPoint.y - secondPoint.y)) * 180 / Math.PI);
+    	} else if (secondPoint.x < firstPoint.x) { //above 180 degrees to 360/0
+        	return 360 - (Math.atan2((firstPoint.x - secondPoint.x), (firstPoint.y - secondPoint.y)) * 180 / Math.PI);
+    	}
+
+    	return Math.atan2(0 ,0);
+	}
+
+	private double distance(Point firstPoint, Point secondPoint)
+	{
+		int xDistance = 0;
+		int yDistance = 0;
+
+		if (firstPoint.x > secondPoint.x) {
+			xDistance = (int) Math.pow(firstPoint.x - secondPoint.x, 2);
+		} else if (firstPoint.x < secondPoint.x) {
+			xDistance = (int) Math.pow(secondPoint.x - firstPoint.x, 2);
+		}
+
+		if (firstPoint.y > secondPoint.y) {
+			yDistance = (int) Math.pow(firstPoint.y - secondPoint.y, 2);
+		} else if (firstPoint.y < secondPoint.y) {
+			yDistance = (int) Math.pow(secondPoint.y - firstPoint.y, 2);
+		}
+
+		return Math.sqrt(xDistance + yDistance);
+	}
+
 
     private Point getTilePoint(int tile)
     {

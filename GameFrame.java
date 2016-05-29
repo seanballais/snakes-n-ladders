@@ -47,13 +47,20 @@ public class GameFrame extends JFrame
 
 		new Music();
 	}
-	
-	
+
+
 	public void attachBoardPanel()
 	{
 		PointGeneration pg = new PointGeneration();
         int[] tiles = pg.getTiles();
 		board = new BoardPanel(tiles);
+
+		System.out.println("Tile Values");
+		int counter = 0;
+		for (int tile : tiles) {
+			counter++;
+			System.out.println("\tTile #" + counter + ": " + tile);
+		}
 
 		colorOfLines[0] = new Color(96,96,96);
 		colorOfLines[1] = new Color(30,30,30);
