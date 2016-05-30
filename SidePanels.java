@@ -6,8 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.BorderFactory;
@@ -28,18 +26,22 @@ import javax.swing.UIManager;
 import javax.swing.SwingConstants;
 import java.util.Random;
 
-public class SidePanels extends JPanel implements ActionListener, ItemListener
-{	
+public class SidePanels extends JPanel implements ActionListener
+{
 	private int diceNo;
+	public static char triggerEvent;
+
 	private ButtonGroup glue;
-	private JLabel playersTitle, diceResult;
+	private JPanel diceResultPanel;
+	private JLabel playersTitle;
 	private JFrame instructionsFrame, creditsFrame;
 	private JTextField currentPlayer, tilePosition;
-	
+
 	public static Border border;
 	public static JPanel leftPanel;
+	public static JLabel diceResult;
 	public static JButton stop, resume, pause, back, back2;
-	public static JButton newGame, exit, instructions, credits, rollDice;
+	public static JButton newGame, backToMenu, instructions, credits, rollDice;
 
 	private Icon[] diceImages = new Icon[6];
 	private JPanel[] mainPanels = new JPanel[2];
@@ -48,8 +50,14 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 	public static JTextField[] nameDisplayFields = new JTextField[2];
 	public static JTextField[] currentPlayerAndTilePosition = new JTextField[4];
 	public static JRadioButton[] numberOfRounds = new JRadioButton[5];
-
 	private Font eras = new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 15);
+
+	Random randomizer = new Random();
+
+	public SidePanels()
+	{
+		//blank constructor for use in setplayerinfo
+	}
 
 	public SidePanels(Border b)
 	{
@@ -57,8 +65,6 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 		UIManager.put("Button.background", new Color(0,0,128));
 		UIManager.put("Button.foreground", new Color(255,128,0));
 		UIManager.put("Button.font", new Font("Eras Bold ITC", Font.BOLD, 15));
-		UIManager.put("RadioButton.disabledText", Color.BLACK);
-		UIManager.put("RadioButton.font", new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 12));
 		UIManager.put("OptionPane.messageFont", new Font("Britannic Bold", Font.PLAIN, 16));
 
 		setLayout(new BorderLayout(5,5));
@@ -73,7 +79,6 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		add(mainPanels[0], BorderLayout.CENTER);
 		add(mainPanels[1], BorderLayout.SOUTH);
-		mainPanels[1].setPreferredSize(new Dimension(240,240));
 	}
 
 
@@ -95,46 +100,25 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 	public void createButtonsOnTop()
 	{
-		String[] number = {"Checkered", "Casual", "Dark", "Chocolate", "Rainbow"};
-
 		JPanel jButtonPanel = new JPanel();
-		JPanel radioButtonPanel = new JPanel();
 
-		newGame = new JButton("New Game");
-		exit = new JButton("Exit");
+		newGame = new JButton(new ImageIcon("resources/buttonIcons/newGameButton.png"));
+		backToMenu = new JButton(new ImageIcon("resources/buttonIcons/mainmenuButton.png"));
+
+		newGame.setRolloverIcon(new ImageIcon("resources/buttonIcons/newGameHover.png"));
+		backToMenu.setRolloverIcon(new ImageIcon("resources/buttonIcons/mainmenuHover.png"));
 
 		jButtonPanel.setLayout(new GridLayout(1,2));
 		jButtonPanel.setBackground(new Color(0,96,255));
+		jButtonPanel.setPreferredSize(new Dimension(30,30));
 		jButtonPanel.add(newGame);
-		jButtonPanel.add(exit);
-/*
-		glue = new ButtonGroup();
+		jButtonPanel.add(backToMenu);
 
-		for(int x = 0; x < 5; x++)
-		{
-			numberOfRounds[x] = new JRadioButton(number[x], false);
-			numberOfRounds[x].setEnabled(false);
-			radioButtonPanel.add(numberOfRounds[x]);
-			glue.add(numberOfRounds[x]);
-		}
-
-		TitledBorder tBorder = new TitledBorder(new LineBorder(Color. WHITE, 2), "Color Theme");
-		tBorder.setTitleJustification(TitledBorder.CENTER);
-		tBorder.setTitleColor(Color.WHITE);
-
-		radioButtonPanel.setBorder(tBorder);
-		radioButtonPanel.setBackground(Color.DARK_GRAY);
-		radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
-*/
-		playerAndStatusPanels[0].setLayout(new BorderLayout(2,2));
-		playerAndStatusPanels[0].add(jButtonPanel, BorderLayout.CENTER);
-	//	playerAndStatusPanels[0].add(radioButtonPanel, BorderLayout.SOUTH);
+		playerAndStatusPanels[0].setLayout(new BorderLayout(0,0));
+		playerAndStatusPanels[0].add(jButtonPanel);
 
 		newGame.addActionListener(this);
-		exit.addActionListener(this);
-
-	//	for(int y = 0; y < 5; y++)
-	//		numberOfRounds[y].addItemListener(this);
+		backToMenu.addActionListener(this);
 	}
 
 
@@ -167,11 +151,11 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		panel1.setLayout(new FlowLayout());
 		panel1.setBackground(new Color(40,40,40));
-		panel1.setPreferredSize(new Dimension(250,190));
+		panel1.setPreferredSize(new Dimension(250,160));
 		panel1.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3, true));
 
 		panel2.setLayout(new FlowLayout());
-		panel2.setPreferredSize(new Dimension(290,280));
+		panel2.setPreferredSize(new Dimension(290,250));
 		panel2.setBackground(new Color(0,0,128));
 		panel2.setForeground(Color.WHITE);
 		panel2.setBorder(border);
@@ -222,30 +206,37 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		playerAndStatusPanels[1].add(txtFieldPanel);
 	}
-	
+
 	public void createDicePanel()
 	{
-		JPanel diceResultPanel;
-		JPanel instructionsCreditsPanel;
+		JPanel playPausePanel;
 
-		String[] diceNames = {"resources/dice1.jpg", "resources/dice2.jpg", "resources/dice3.jpg", "resources/dice4.jpg",
-							  "resources/dice5.jpg", "resources/dice6.jpg"};
+		stop = new JButton(new ImageIcon("resources/stop.png"));
+		pause = new JButton(new ImageIcon("resources/pause.png"));
+		resume = new JButton(new ImageIcon("resources/play.png"));
 
-		credits = new JButton("About");
-		rollDice = new JButton("Roll Dice");
-		instructions = new JButton("Instructions");
-		
-		rollDice.setEnabled(false);
+		resume.addActionListener(this);
+		pause.addActionListener(this);
+		stop.addActionListener(this);
+
+		String[] diceNames = {"resources/diceIcons/dice1.jpg", "resources/diceIcons/dice2.jpg",
+							  "resources/diceIcons/dice3.jpg", "resources/diceIcons/dice4.jpg",
+							  "resources/diceIcons/dice5.jpg", "resources/diceIcons/dice6.jpg"};
+
+		rollDice = new JButton(new ImageIcon("resources/buttonIcons/rolldiceButton.png"));
+		rollDice.setPreferredSize(new Dimension(40,40));
+		rollDice.addActionListener(this);
 
 		for(int x = 0; x < 6; x++)
 			diceImages[x] = new ImageIcon(diceNames[x]);
 
 		diceResult = new JLabel();
-		
-		instructionsCreditsPanel = new JPanel();
-		instructionsCreditsPanel.setLayout(new GridLayout(1,2));
-		instructionsCreditsPanel.add(instructions);
-		instructionsCreditsPanel.add(credits);
+
+		playPausePanel = new JPanel();
+		playPausePanel.setLayout(new GridLayout(1,3));
+		playPausePanel.add(resume);
+		playPausePanel.add(pause);
+		playPausePanel.add(stop);
 
 		diceResultPanel = new JPanel();
 		diceResultPanel.setBackground(Color.BLACK);
@@ -254,133 +245,25 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 
 		mainPanels[1].setLayout(new BorderLayout(2,2));
 		mainPanels[1].add(rollDice, BorderLayout.NORTH);
+		mainPanels[1].setPreferredSize(new Dimension(240,300));
 		mainPanels[1].add(diceResultPanel, BorderLayout.CENTER);
-		mainPanels[1].add(instructionsCreditsPanel, BorderLayout.SOUTH);
-				
-		credits.addActionListener(this);
-		rollDice.addActionListener(this);
-		instructions.addActionListener(this);
+		mainPanels[1].add(playPausePanel, BorderLayout.SOUTH);
 	}
 
-
-	public void gameInstructions()
-	{		
-		JPanel picturePanel = new JPanel();
-		JPanel bPanel = new JPanel();
-		
-		back = new JButton("BACK");
-		back.setFont(new Font("Eras Bold ITC", Font.ITALIC, 40));
-		back.addActionListener(this);
-		
-		picturePanel.setBackground(new Color(0,0,128));
-		picturePanel.add(new JLabel(new ImageIcon("resources/instructions.jpg")), SwingConstants.CENTER);
-		bPanel.setBackground(new Color(0,0,128));
-		bPanel.setLayout(new BorderLayout(0,0));
-		bPanel.setPreferredSize(new Dimension(50,50));
-		bPanel.add(back, BorderLayout.CENTER);
-		
-		instructionsFrame = new JFrame();
-		instructionsFrame.setLayout(new BorderLayout(2,2));
-		instructionsFrame.add(picturePanel, BorderLayout.CENTER);
-		instructionsFrame.add(bPanel, BorderLayout.SOUTH);
-		
-		instructionsFrame.setUndecorated(true);
-		instructionsFrame.setSize(1060,720);
-		instructionsFrame.setLocationRelativeTo(null);
-		instructionsFrame.setVisible(true);
-		instructionsFrame.getRootPane().setBorder(border);
-	}
-
-
-	public void gameCredits()
+	public void resetGame()
 	{
-		disableMenuButtons();
-		
-		JPanel bPanel = new JPanel();
-		back2 = new JButton("BACK");
-		back2.addActionListener(this);
-		bPanel.setLayout(new BorderLayout(0,0));
-		bPanel.add(back2);
-		
-		creditsFrame = new JFrame();
-		JScrollPane scrollPane;
+		BoardPanel.tileNo[GameProper.ctrForTile1].setIcon(null);
+		BoardPanel.tileNo[GameProper.ctrForTile2].setIcon(null);
+		diceResult.setIcon(null);
 
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BorderLayout(0,0));
-		creditsFrame.getContentPane().add(topPanel);
+		SetPlayerInfo.ctr = 1;
+		SetPlayerInfo.disableMouseListener = 't';
+		GameProper.diceNo = 0;
+		GameProper.ctrForTurn = 0;
+		GameProper.ctrForTile1 = 0;
+		GameProper.ctrForTile2 = 0;
 
-		Icon image = new ImageIcon("resources/CreditsFINAL.jpg");
-		JLabel label = new JLabel(image);
 
-		scrollPane = new JScrollPane();
-		scrollPane.getViewport().add(label);
-		topPanel.add(scrollPane, BorderLayout.CENTER);
-		
-		creditsFrame.setLayout(new BorderLayout(2,2));
-		creditsFrame.add(topPanel, BorderLayout.CENTER);
-		creditsFrame.add(bPanel, BorderLayout.SOUTH);
-		
-		creditsFrame.setUndecorated(true);
-		creditsFrame.setSize(595,700);
-		creditsFrame.setVisible(true);
-		creditsFrame.setLocationRelativeTo(null);
-		creditsFrame.getRootPane().setBorder(border);
-	}
-	
-	public void createLeftPanel()
-	{
-		JPanel buttonsPanel;
-		JPanel blankPanel;
-		
-		leftPanel = new JPanel();
-		blankPanel = new JPanel();
-		buttonsPanel = new JPanel();
-		
-		stop = new JButton(new ImageIcon("resources/stop.png"));
-		pause = new JButton(new ImageIcon("resources/pause.png"));
-		resume = new JButton(new ImageIcon("resources/play.png"));
-		resume.setEnabled(false);
-		stop.setEnabled(false);
-		pause.setEnabled(false);
-		
-		buttonsPanel.setLayout(new GridLayout(3,1));	
-		buttonsPanel.add(resume);
-		buttonsPanel.add(pause);
-		buttonsPanel.add(stop);
-								
-								
-		blankPanel.setBackground(Color.BLACK);
-		leftPanel.setLayout(new BorderLayout(0,0));
-		leftPanel.setPreferredSize(new Dimension(90,90));
-		leftPanel.setBackground(Color.BLACK);
-		leftPanel.add(blankPanel, BorderLayout.CENTER);
-		leftPanel.add(buttonsPanel, BorderLayout.SOUTH);
-		
-		stop.addActionListener(this);
-		pause.addActionListener(this);
-		resume.addActionListener(this);
-	}
-	
-	public static void disableMenuButtons()
-	{
-		SidePanels.newGame.setEnabled(false);
-		SidePanels.rollDice.setEnabled(false);
-		SidePanels.instructions.setEnabled(false);
-		SidePanels.credits.setEnabled(false);
-		SidePanels.exit.setEnabled(false);
-	}
-	
-	public static void enableMenuButtons()
-	{
-		SidePanels.newGame.setEnabled(true);
-		SidePanels.rollDice.setEnabled(true);
-		SidePanels.instructions.setEnabled(true);
-		SidePanels.credits.setEnabled(true);
-		SidePanels.exit.setEnabled(true);
-	}
-
-	public void resetTextFields()
-	{
 		for(int i = 0; i < 4; i++)
 		{
 			if(i < 2)
@@ -390,127 +273,98 @@ public class SidePanels extends JPanel implements ActionListener, ItemListener
 				scoreOfPlayers[i].setText("0");
 			}else
 				currentPlayerAndTilePosition[i].setText("");
-				
+
 		}
+
+		triggerEvent = '\0';
+		resume.removeActionListener(this);
+		pause.removeActionListener(this);
+		stop.removeActionListener(this);
 	}
-	
+
 	public void actionPerformed(ActionEvent e)
 	{
 		Icon icon = new ImageIcon("resources/sl.png");
-		
+
 		if(e.getSource() == newGame)
 		{
 			SetPlayerInfo info = new SetPlayerInfo();
-			
+
 			info.setSize(600,650);
 			info.setUndecorated(true);
 			info.setLocationRelativeTo(null);
 			info.getRootPane().setBorder(border);
 			info.setVisible(true);
-			
-			disableMenuButtons();
 
-		}else if(e.getSource() == exit) {
+			newGame.setEnabled(false);
+			backToMenu.setEnabled(false);
 
-			int dialogResult = JOptionPane.showConfirmDialog(null, "Do You Really Wish to Quit?", "Quit", JOptionPane.YES_NO_OPTION);
+		}else if(e.getSource() == backToMenu) {
 
-			if(dialogResult == 0)
-			{
-				JFrame f = new JFrame();
-				
-				System.exit(0);
-				
-				f.setSize(200,200);
-				f.setUndecorated(true);
-				f.setLocationRelativeTo(null);
-				f.getRootPane().setBorder(new LineBorder(Color.BLACK, 8, true));
-				f.setContentPane(new JLabel(new ImageIcon("resources/lastFrameGames.png")));
-				f.setVisible(true);
-			}
+			System.exit(0);
 
 		}else if(e.getSource() == rollDice) {
 
-			Random randomizer = new Random();
-
-			diceNo = randomizer.nextInt(diceImages.length);
-			diceResult.setIcon(diceImages[diceNo]);
-			diceResult.setHorizontalAlignment(SwingConstants.CENTER);
-
-			for(int x = 0; x < 4; x++)
+			if(triggerEvent == 't')
 			{
-				if(GameProper.ctrForTurn % 2 == 0)
-					currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[1]]);
-				else
-					currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[0]]);
+				diceNo = randomizer.nextInt(diceImages.length);
+				diceResult.setIcon(diceImages[diceNo]);
+				diceResult.setHorizontalAlignment(SwingConstants.CENTER);
+
+				for(int x = 0; x < 4; x++)
+				{
+					if(GameProper.ctrForTurn % 2 == 0)
+						currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[1]]);
+					else
+						currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[0]]);
+				}
+
+				GameProper g = new GameProper(diceNo);
+				new Music("resources/RollDice.wav");
+
+			}else if(triggerEvent == 'f')
+				JOptionPane.showMessageDialog(null, "Game Paused. Resume to Roll.", "Paused", JOptionPane.INFORMATION_MESSAGE);
+			else
+				JOptionPane.showMessageDialog(null, "No Game in Commence. Create Game First.", "Woops!", JOptionPane.WARNING_MESSAGE);
+
+		}else if(e.getSource() == pause) {
+			if(triggerEvent == 't')
+			{
+				JOptionPane.showMessageDialog(null, new JLabel(icon, JLabel.CENTER), "Game Paused", JOptionPane.PLAIN_MESSAGE);
+				triggerEvent = 'f';
+
+			}else if(triggerEvent == 'f')
+				JOptionPane.showMessageDialog(null, "  Currently Paused.", "Game Paused", JOptionPane.INFORMATION_MESSAGE);
+			else
+				JOptionPane.showMessageDialog(null, "No Game in Commence. Create Game First.", "Woops!", JOptionPane.WARNING_MESSAGE);
+
+		}else if(e.getSource() == resume) {
+			if(triggerEvent == 'f')
+			{
+				JOptionPane.showMessageDialog(null, new JLabel(icon, JLabel.CENTER), "Game Resumed", JOptionPane.PLAIN_MESSAGE);
+				triggerEvent = 't';
+			}else if(triggerEvent == '\0')
+				JOptionPane.showMessageDialog(null, "No Game in Commence. Create Game First.", "Woops!", JOptionPane.WARNING_MESSAGE);
+
+		}else if(e.getSource() == stop) {
+			if(triggerEvent == '\0')
+				JOptionPane.showMessageDialog(null, "No Game in Commence. Create Game First.", "Woops!", JOptionPane.WARNING_MESSAGE);
+
+			else{
+				int counter = JOptionPane.showConfirmDialog(null, "  Abandon Match?", "End Game?", JOptionPane.YES_NO_OPTION);
+
+				if(counter == 0)
+				{
+					newGame.addActionListener(this);
+					backToMenu.addActionListener(this);
+					rollDice.removeActionListener(this);
+
+					resetGame();
+				}
 			}
 
-			GameProper g = new GameProper(diceNo);
-			new Music("resources/RollDice.wav");
-
-		}else if(e.getSource() == instructions) {
-			gameInstructions();
-			disableMenuButtons();
-			
-		}else if(e.getSource() == credits)
-			gameCredits();
-		
-		else if(e.getSource() == pause) {
-			JOptionPane.showMessageDialog(null, new JLabel(icon, JLabel.CENTER), "Game Paused", JOptionPane.PLAIN_MESSAGE);
-			pause.setEnabled(false);
-			resume.setEnabled(true);
-			stop.setEnabled(true);
-			disableMenuButtons();
-				
-		}else if(e.getSource() == resume) {
-			JOptionPane.showMessageDialog(null, new JLabel(icon, JLabel.CENTER), "Game Resumed", JOptionPane.PLAIN_MESSAGE);
-			resume.setEnabled(false);
-			rollDice.setEnabled(true);
-			stop.setEnabled(false);
-			
-		}else if(e.getSource() == stop) {
-			int ctr = JOptionPane.showConfirmDialog(null, "  Abandon Match?", "End Game", JOptionPane.YES_NO_OPTION);
-			
-			if(ctr == 0)
-			{
-				enableMenuButtons();
-				rollDice.setEnabled(false);
-				resume.setEnabled(false);
-				stop.setEnabled(false);
-				pause.setEnabled(false);
-				
-				BoardPanel.tileNo[GameProper.ctrForTile1].setIcon(null);
-				BoardPanel.tileNo[GameProper.ctrForTile2].setIcon(null);
-								
-				SetPlayerInfo.ctr = 1;
-				SetPlayerInfo.disableMouseListener = 't';
-				GameProper.diceNo = 0;
-				GameProper.ctrForTurn = 0;
-				GameProper.ctrForTile1 = 0;
-				GameProper.ctrForTile2 = 0;
-								
-				resetTextFields();
-			}	
-						
-		}else if(e.getSource() == back) {
-			
-			instructionsFrame.dispose();
-			enableMenuButtons();
-			rollDice.setEnabled(false);
-			
-		}else if(e.getSource() == back2){
-			
-			creditsFrame.dispose();
-			enableMenuButtons();
-			rollDice.setEnabled(false);
-			
 		}
-	}
-	
-	
-	public void itemStateChanged(ItemEvent e)
-	{
 
-			
 	}
 
 }

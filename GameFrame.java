@@ -4,7 +4,6 @@ import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -32,16 +31,20 @@ public class GameFrame extends JFrame
 
 	public GameFrame()
 	{
+		JPanel blankPanel;
+
 		setLayout(new BorderLayout(5,5));
 		setBackground(Color.BLACK);
 
 		attachBoardPanel();
-
 		sidePanel = new SidePanels(compound3);
 		sidePanel.setPreferredSize(new Dimension(300,300));
-		sidePanel.createLeftPanel();
 
-		add(SidePanels.leftPanel, BorderLayout.WEST);
+		blankPanel = new JPanel();
+		blankPanel.setBackground(Color.BLACK);
+		blankPanel.setPreferredSize(new Dimension(100,100));
+
+		add(blankPanel, BorderLayout.WEST);
 		add(boardAndTitle, BorderLayout.CENTER);
 		add(sidePanel,BorderLayout.EAST);
 
@@ -54,13 +57,6 @@ public class GameFrame extends JFrame
 		PointGeneration pg = new PointGeneration();
         int[] tiles = pg.getTiles();
 		board = new BoardPanel(tiles);
-
-		System.out.println("Tile Values");
-		int counter = 0;
-		for (int tile : tiles) {
-			counter++;
-			System.out.println("\tTile #" + counter + ": " + tile);
-		}
 
 		colorOfLines[0] = new Color(96,96,96);
 		colorOfLines[1] = new Color(30,30,30);

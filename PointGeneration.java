@@ -1,18 +1,17 @@
 import java.awt.Point;
 import java.util.Random;
 import java.util.ArrayList;
-import static java.lang.Math.abs;
 
 public class PointGeneration
 {
     private Random generator = new Random();
-    private int pointLimit = 20;
+    private int pointLimit = 15;
 
     public PointGeneration()
     {
         Random seedGenerator = new Random();
         this.generator.setSeed(seedGenerator.nextInt(32000));
-        this.pointLimit = 20;
+        this.pointLimit = 15;
     }
 
     public int[] pointCorrection(int[] tiles)
@@ -27,7 +26,7 @@ public class PointGeneration
 
                 if (tiles[pointCtr] == tiles[elemCtr] ||
                     getFirstDigit(tiles[pointCtr]) == getFirstDigit(tiles[elemCtr])) {
-                    tiles[pointCtr] = this.generator.nextInt(100);
+                    tiles[pointCtr] = this.generator.nextInt(96) + 3;
                 }
             }
         }
@@ -46,10 +45,7 @@ public class PointGeneration
         int position = 0;
 
         for (int tileCtr = 0; tileCtr < pointLimit; tileCtr++, position++)
-            tiles[tileCtr] = this.generator.nextInt(97) + 1;
-
-		tiles[pointLimit - 2] = this.generator.nextInt(2) + 97;
-		tiles[pointLimit - 1] = this.generator.nextInt(2);
+            tiles[tileCtr] = this.generator.nextInt(96) + 3;
 
         return pointCorrection(tiles);
     }

@@ -70,7 +70,7 @@ public class SetPlayerInfo extends JFrame implements ActionListener
 		titleColorChange.add(title, SwingConstants.CENTER);
 		titleColorChange.setBorder(SidePanels.border);
 		titleColorChange.setBackground(Color.BLUE);
-		
+
 		title.addMouseListener(new MouseHandler());
 	}
 
@@ -84,7 +84,7 @@ public class SetPlayerInfo extends JFrame implements ActionListener
 		{
 			pieceImages[x] = new JLabel(new ImageIcon(pieceImgNames[x]));
 			pieceImages[x].addMouseListener(new MouseHandler());
-			
+
 			pieceImgHolder[x] = new JPanel();
 			pieceImgHolder[x].setBorder(new LineBorder(Color.ORANGE, 5, true));
 			pieceImgHolder[x].setBackground(Color.BLACK);
@@ -135,27 +135,23 @@ public class SetPlayerInfo extends JFrame implements ActionListener
 			this.dispose();
 			SidePanels.nameDisplayFields[0].setText("  Player 1: " + p1);
 			SidePanels.nameDisplayFields[1].setText("  Player 2: " + p2);
-
-			SidePanels.newGame.setEnabled(false);
-			SidePanels.instructions.setEnabled(false);
-			SidePanels.credits.setEnabled(false);
 			SidePanels.rollDice.setEnabled(true);
-/*
-			for(int x = 0; x < 5; x++)
-				SidePanels.numberOfRounds[x].setEnabled(true);
-*/			
-			JOptionPane.showMessageDialog(null, " Game Play Commenced. Roll Dice.", "Start", JOptionPane.PLAIN_MESSAGE);			
-			
-			
+
+			JOptionPane.showMessageDialog(null, " Game Play Commenced. Roll Dice.", "Start", JOptionPane.PLAIN_MESSAGE);
 			BoardPanel.tileNo[0].setIcon(new ImageIcon(GameProper.jpgs[colorIndexOfPlayers[0]]));
 			BoardPanel.tileNo[0].setIcon(new ImageIcon(GameProper.jpgs[colorIndexOfPlayers[1]]));
-			
+
 			SidePanels.currentPlayerAndTilePosition[2].setText(p1);
 			SidePanels.currentPlayerAndTilePosition[3].setText("1");
-			SidePanels.pause.setEnabled(true);
-			
+
 			for(int x = 0; x < 4; x++)
 				SidePanels.currentPlayerAndTilePosition[x].setForeground(SetPlayerInfo.colors[SetPlayerInfo.colorIndexOfPlayers[0]]);
+
+			SidePanels.triggerEvent = 't';
+			SidePanels s = new SidePanels();
+			SidePanels.resume.addActionListener(s);
+			SidePanels.pause.addActionListener(s);
+			SidePanels.stop.addActionListener(s);
 		}
 	}
 
@@ -179,7 +175,7 @@ public class SetPlayerInfo extends JFrame implements ActionListener
 						pieceImages[x].setFont(new Font("Eras Bold ITC", Font.ITALIC + Font.BOLD, 20));
 						pieceImages[x].setVerticalAlignment(SwingConstants.CENTER);
 						pieceImgHolder[x].setBackground(colors[x]);
-						
+
 					}else{
 
 						JOptionPane.showMessageDialog(null, "Color Already Selected, Pick Another Color.",
@@ -251,4 +247,3 @@ public class SetPlayerInfo extends JFrame implements ActionListener
 	}
 
 }
-

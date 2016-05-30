@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -24,7 +25,7 @@ public class GameProper implements ActionListener
 	private JFrame anotherRound;
 	private JButton playAgain, endGame;
 	private JLabel winnerLabel, scores, title, scoreLabel;
-	
+
 	private JPanel[] confirmationPanels = new JPanel[3];
 	public static String[] jpgs = {"resources/b.png", "resources/r.png", "resources/y.png", "resources/g.png"};
 
@@ -51,17 +52,21 @@ public class GameProper implements ActionListener
 	{
 		if((ctrForTurn % 2) == 1)
 		{
-			BoardPanel.tileNo[ctrForTile1].setIcon(null);
+			if (onTeleportTile(ctrForTile1)) {
+				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon("resources/teleportTile.png"));
+			} else {
+				BoardPanel.tileNo[ctrForTile1].setIcon(null);
+			}
 
 			if(ctrForTile1 == ctrForTile2)
-				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));				
-							
+				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
+
 
 			int oldTilePosition = ctrForTile1;
 			ctrForTile1 = nextMove(ctrForTile1 + diceNo); // Replace 1 with diceNo
 
 			if(ctrForTile1 < 99)
-				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));			
+				BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
 			if (oldTilePosition + diceNo != ctrForTile1) // Replace 1 with diceNo
 				JOptionPane.showMessageDialog(null, SetPlayerInfo.p1 + " teleported to tile " + (ctrForTile1 + 1) + ".");
 
@@ -71,10 +76,10 @@ public class GameProper implements ActionListener
 				{
 					int oldTilePosition1 = ctrForTile1;
 					ctrForTile1 = nextMove(99 - (ctrForTile1 - 99));
-					
+
 					if (oldTilePosition1 + diceNo != ctrForTile1)
 						JOptionPane.showMessageDialog(null, SetPlayerInfo.p1 + " teleported to tile " + (ctrForTile1 + 1) + ".");
-					
+
 					BoardPanel.tileNo[ctrForTile1].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
 
 				}else if(ctrForTile1 == 99) {
@@ -84,7 +89,6 @@ public class GameProper implements ActionListener
 
 					playAgainConfirmation(SetPlayerInfo.p1);
 
-					SidePanels.rollDice.setEnabled(false);
 					SidePanels.scoreOfPlayers[0].setText(s);
 
 				}
@@ -95,8 +99,11 @@ public class GameProper implements ActionListener
 			SidePanels.currentPlayerAndTilePosition[3].setText(s2);
 
 		}else{
-
-			BoardPanel.tileNo[ctrForTile2].setIcon(null);
+			if (onTeleportTile(ctrForTile2)) {
+				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon("resources/teleportTile.png"));
+			} else {
+				BoardPanel.tileNo[ctrForTile2].setIcon(null);
+			}
 
 			if(ctrForTile1 == ctrForTile2)
 				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[0]]));
@@ -105,7 +112,7 @@ public class GameProper implements ActionListener
 	    	ctrForTile2 = nextMove(ctrForTile2 + diceNo); // Replace 1 with diceNo
 
 			if(ctrForTile2 < 99)
-				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));			
+				BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
 	        if (oldTilePosition + diceNo != ctrForTile2) // Replace 1 with diceNo
 	            JOptionPane.showMessageDialog(null, SetPlayerInfo.p2 + " teleported to tile " + (ctrForTile2 + 1) + ".");
 
@@ -115,10 +122,10 @@ public class GameProper implements ActionListener
 				{
 					int oldTilePosition2 = ctrForTile2;
 					ctrForTile2 = nextMove(99 - (ctrForTile2 - 99));
-					
+
 					if (oldTilePosition2 + diceNo != ctrForTile2)
 						JOptionPane.showMessageDialog(null, SetPlayerInfo.p2 + " teleported to tile " + (ctrForTile2 + 1) + ".");
-					
+
 					BoardPanel.tileNo[ctrForTile2].setIcon(new ImageIcon(jpgs[SetPlayerInfo.colorIndexOfPlayers[1]]));
 
 				}else if(ctrForTile2 == 99) {
@@ -128,7 +135,6 @@ public class GameProper implements ActionListener
 
 					playAgainConfirmation(SetPlayerInfo.p2);
 
-					SidePanels.rollDice.setEnabled(false);
 					SidePanels.scoreOfPlayers[1].setText(s);
 
 				}
@@ -143,8 +149,8 @@ public class GameProper implements ActionListener
 	public void playAgainConfirmation(String w)
 	{
 		JPanel labelPanels = new JPanel();
-				
-		SidePanels.pause.setEnabled(false);	
+		SidePanels.triggerEvent = 'f';
+
 		for(int x = 0 ; x < 3 ; x++)
 		{
 			confirmationPanels[x] = new JPanel();
@@ -173,7 +179,7 @@ public class GameProper implements ActionListener
 		scores.setFont(eras);
 		scoreLabel.setFont(eras);
 		winnerLabel.setFont(eras);
-		
+
 		scores.setForeground(orange);
 		scoreLabel.setForeground(orange);
 		winnerLabel.setForeground(orange);
@@ -181,7 +187,7 @@ public class GameProper implements ActionListener
 		playAgain = new JButton("Play More");
 		playAgain.setFont(eras2);
 		playAgain.addActionListener(this);
-		
+
 		endGame = new JButton("End Game");
 		endGame.setFont(eras2);
 		endGame.addActionListener(this);
@@ -217,7 +223,14 @@ public class GameProper implements ActionListener
 
 		if(e.getSource() == playAgain)
 		{
+			setPieceOnBoard();
 			anotherRound.dispose();
+
+			SidePanels.currentPlayerAndTilePosition[2].setText(SetPlayerInfo.p1);
+			SidePanels.currentPlayerAndTilePosition[3].setText("1");
+			SidePanels.triggerEvent = 't';
+			SidePanels.newGame.setEnabled(true);
+			SidePanels.backToMenu.setEnabled(true);
 
 			SetPlayerInfo.disableMouseListener = 't';
 			SetPlayerInfo.ctr = 1;
@@ -225,10 +238,6 @@ public class GameProper implements ActionListener
 			ctrForTile2 = 0;
 			ctrForTurn = 0;
 			diceNo = 0;
-	
-			SidePanels.pause.setEnabled(true);
-			SidePanels.rollDice.setEnabled(true);
-			setPieceOnBoard();
 
 		}else if(e.getSource() == endGame) {
 
@@ -250,6 +259,9 @@ public class GameProper implements ActionListener
 			{
 				anotherRound.dispose();
 
+				SidePanels.diceResult.setIcon(null);
+				SidePanels.triggerEvent = '\0';
+
 				SetPlayerInfo.ctr = 1;
 				ctrForTile1 = 0;
 				ctrForTile2 = 0;
@@ -258,20 +270,15 @@ public class GameProper implements ActionListener
 				score2 = 0;
 				diceNo = 0;
 
-				SidePanels.newGame.setEnabled(true);
-				SidePanels.pause.setEnabled(false);
-				SidePanels.exit.setEnabled(true);
-				SidePanels.credits.setEnabled(true);
-				SidePanels.instructions.setEnabled(true);
-			}
+				for(int a = 0; a < 2; a++)
+				{
+					SidePanels.scoreOfPlayers[a].setText("0");
+					SidePanels.nameDisplayFields[a].setText("  Player " + (a+1) + ":");
+					SidePanels.currentPlayerAndTilePosition[a].setForeground(Color.WHITE);
+					SidePanels.currentPlayerAndTilePosition[a+2].setForeground(Color.WHITE);
+					SidePanels.currentPlayerAndTilePosition[a+2].setText("");
+				}
 
-			for(int a = 0; a < 2; a++)
-			{
-				SidePanels.scoreOfPlayers[a].setText("0");
-				SidePanels.nameDisplayFields[a].setText("  Player " + (a+1) + ":");
-				SidePanels.currentPlayerAndTilePosition[a].setForeground(Color.WHITE);
-				SidePanels.currentPlayerAndTilePosition[a+2].setForeground(Color.WHITE);
-				SidePanels.currentPlayerAndTilePosition[a+2].setText("");
 			}
 
 			anotherRound.setSize(650,500);
@@ -279,29 +286,19 @@ public class GameProper implements ActionListener
 		}
 	}
 
-	public int nextMove(int nextTile)
+	private int nextMove(int nextTile)
 	{
-        int pairTile = 0;
-		// Checks and moves the piece depending on the tile
-		if (onLadderTile(nextTile)) {
-            pairTile = getPairTile(nextTile, BoardPanel.ladderTiles);
-			if (pairTile > nextTile) 
-				return pairTile;
-			
-		} else if (onSnakeTile(nextTile)) {
-            pairTile = getPairTile(nextTile, BoardPanel.snakeTiles);
-			if (pairTile < nextTile)
-				return pairTile;
+		if (onTeleportTile(nextTile)) {
+            return randomTile(nextTile);
 		}
 
 		return nextTile;
 	}
 
-	public boolean onLadderTile(int tile)
+	private boolean onTeleportTile(int tile)
 	{
-		for (int ladderCtr = 0; ladderCtr < BoardPanel.ladderTiles.length; ladderCtr++) {
-			// Check if the player is on a lower ladder tile
-			if (tile == BoardPanel.ladderTiles[ladderCtr]) {
+		for (int tileCtr = 0; tileCtr < BoardPanel.teleportTiles.length; tileCtr++) {
+			if (tile == BoardPanel.teleportTiles[tileCtr]) {
 				return true;
 			}
 		}
@@ -309,34 +306,12 @@ public class GameProper implements ActionListener
 		return false;
 	}
 
-	public int getPairTile(int tile, int[] tiles)
+	private int randomTile(int tile)
 	{
-		// Get the pair tile of the (int) tile.
-		for (int pairCtr = 0; pairCtr < tiles.length; pairCtr++) {
-			// Check if the player is on a lower ladder tile
-			if (tiles[pairCtr] == tile) {
-				if (pairCtr % 2 == 0) {
-					// First element in the pair
-					return tiles[pairCtr + 1];
-				} else {
-					// Second element in the pair
-					return tiles[pairCtr - 1];
-				}
-			}
-		}
+		Random rand = new Random();
+		int nextTile = 0;
+		while (BoardPanel.teleportTiles[(nextTile = rand.nextInt(10))] == tile);
 
-		return tile;
-	}
-
-	public boolean onSnakeTile(int tile)
-	{
-		for (int ladderCtr = 0; ladderCtr < BoardPanel.snakeTiles.length; ladderCtr++) 
-		{
-			// Check if the player is on a lower ladder tile
-			if (tile == BoardPanel.snakeTiles[ladderCtr])
-				return true;
-		}
-
-		return false;
+		return BoardPanel.teleportTiles[nextTile];
 	}
 }
