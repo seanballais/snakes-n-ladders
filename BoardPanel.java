@@ -138,8 +138,8 @@ public class BoardPanel extends JPanel
 
 			ladderImage = resizeImage(
 				ladderImage,
-				ladderImage.getWidth(),
-				ladderDistance
+				ladderDistance,
+				ladderImage.getHeight()
 			);
 
 			ladderImage = rotate(ladderImage, ladderAngle);
@@ -156,7 +156,7 @@ public class BoardPanel extends JPanel
 						ladderImage,
 						ladderLine2.x,
 						ladderLine1.y,
-						null;
+						null
 					);
 				} else if (ladderLine1.x > ladderLine2.x) {
 					g2.drawImage(
@@ -185,7 +185,7 @@ public class BoardPanel extends JPanel
 					g2.drawImage(
 						ladderImage,
 						ladderLine2.y,
-						ladderLine.1,
+						ladderLine1.x,
 						null
 					);
 				} else if (ladderLine1.x == ladderLine2.x) {
@@ -239,7 +239,7 @@ public class BoardPanel extends JPanel
         int h = img.getHeight();
 
 		AffineTransform tx = new AffineTransform();
-		tx.rotate(Math.toRadians(angle), w / 2, h);
+		tx.rotate(Math.toRadians(angle), w, h / 2);
 
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 		img = op.filter(img, null);
@@ -267,9 +267,11 @@ public class BoardPanel extends JPanel
         	return (Math.atan2((secondPoint.x - firstPoint.x), (firstPoint.y - secondPoint.y)) * 180 / Math.PI);
     	} else if (secondPoint.x < firstPoint.x) { //above 180 degrees to 360/0
         	return 360 - (Math.atan2((firstPoint.x - secondPoint.x), (firstPoint.y - secondPoint.y)) * 180 / Math.PI);
-    	}
+    	} else if (secondPoint.x == firstPoint.x) {
+			return 90;
+		}
 
-    	return Math.atan2(0 ,0);
+    	return Math.atan2(0, 0);
 	}
 
 	private double distance(Point firstPoint, Point secondPoint)
