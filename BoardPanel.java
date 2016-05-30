@@ -11,10 +11,10 @@ import java.awt.BasicStroke;
 import java.awt.AlphaComposite;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.AffineTransformOp;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -144,10 +144,26 @@ public class BoardPanel extends JPanel
 
 			ladderImage = rotate(ladderImage, ladderAngle);
 
+			System.out.println("Values");
+			System.out.println("\tLadder 1: (" + ladderLine1.x + ", " + ladderLine1.y + ")");
+			System.out.println("\tLadder 2: (" + ladderLine2.x + ", " + ladderLine2.y + ")");
+			System.out.println("\tLadder Angle: " + ladderAngle);
+			System.out.println("\tLadder Distance: " + ladderDistance);
+
 			if (ladderLine1.y < ladderLine2.y) {
-				g2.drawImage(ladderImage, ladderLine1.x, ladderLine1.y, null);
+				g2.drawImage(
+					ladderImage,
+					ladderLine1.x + (ladderLine1.x / 2),
+					ladderLine1.y + (ladderLine1.y / 2),
+					null
+				);
 			} else if (ladderLine2.y < ladderLine1.y) {
-				g2.drawImage(ladderImage, ladderLine2.x, ladderLine2.y, null);
+				g2.drawImage(
+					ladderImage,
+					ladderLine2.x + (ladderLine2.x / 2),
+					ladderLine2.y + (ladderLine2.y / 2),
+					null
+				);
 			}
 		}
 	}
@@ -158,12 +174,13 @@ public class BoardPanel extends JPanel
         int w = img.getWidth();
         int h = img.getHeight();
 
-		BufferedImage dimg = dimg = new BufferedImage(w, h, img.getType());
-        Graphics2D g = dimg.createGraphics();
+		AffineTransform tx = new AffineTransform();
+		tx.rotate(Math.toRadians(angle), w / 2, h);
 
-		g.rotate(Math.toRadians(angle), w/2, h/2);
-        g.drawImage(img, null, 0, 0);
-        return dimg;
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		img = op.filter(img, null);
+
+		return img;
     }
 
 	private BufferedImage resizeImage(final Image image, int width, int height)
