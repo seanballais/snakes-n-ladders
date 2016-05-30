@@ -151,19 +151,83 @@ public class BoardPanel extends JPanel
 			System.out.println("\tLadder Distance: " + ladderDistance);
 
 			if (ladderLine1.y < ladderLine2.y) {
-				g2.drawImage(
-					ladderImage,
-					ladderLine1.x + (ladderLine1.x / 2),
-					ladderLine1.y + (ladderLine1.y / 2),
-					null
-				);
+				if (ladderLine1.x < ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.x,
+						ladderLine1.y,
+						null;
+					);
+				} else if (ladderLine1.x > ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.x,
+						ladderLine1.y,
+						null
+					);
+				} else if (ladderLine1.x == ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine1.x,
+						ladderLine1.y,
+						null
+					);
+				}
 			} else if (ladderLine2.y < ladderLine1.y) {
-				g2.drawImage(
-					ladderImage,
-					ladderLine2.x + (ladderLine2.x / 2),
-					ladderLine2.y + (ladderLine2.y / 2),
-					null
-				);
+				if (ladderLine1.x < ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.y,
+						ladderLine1.x,
+						null
+					);
+				} else if (ladderLine1.x > ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.y,
+						ladderLine.1,
+						null
+					);
+				} else if (ladderLine1.x == ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.x,
+						ladderLine2.y,
+						null
+					);
+				}
+			} else if (ladderLine1.x == ladderLine2.x) {
+				if (ladderLine1.y < ladderLine2.y) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine1.x,
+						ladderLine1.y,
+						null
+					);
+				} else if (ladderLine1.y > ladderLine2.y) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.x,
+						ladderLine2.y,
+						null
+					);
+				}
+			} else if (ladderLine1.y == ladderLine2.y) {
+				if (ladderLine1.x < ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine1.x,
+						ladderLine1.y,
+						null
+					);
+				} else if (ladderLine1.x > ladderLine2.x) {
+					g2.drawImage(
+						ladderImage,
+						ladderLine2.x,
+						ladderLine2.y,
+						null
+					);
+				}
 			}
 		}
 	}
